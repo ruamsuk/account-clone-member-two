@@ -1,1 +1,156 @@
 /* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Pattaya&family=Thasadith&family=Sarabun&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Charmonman:wght@400;700&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+@import "tailwindcss";
+@import "tailwindcss-primeui";
+@import "primeicons/primeicons.css";
+
+@theme {
+  --font-sarabun: Sarabun, sans-serif;
+  --font-thasadith: Thasadith, sans-serif;
+  --font-leera: 'Leelawadee UI', sans-serif;
+  --toast-message-font-size: 1.125rem;
+  --toast-message-font-style: italic;
+}
+
+html {
+  font-family: var(--font-sarabun), serif;
+}
+
+.p-toast-message {
+  font-size: var(--toast-message-font-size);
+  font-style: var(--toast-message-font-style);
+}
+
+.p-toast-detail {
+  font-style: italic;
+  font-size: 1.125rem;
+}
+
+.p-toast-summary {
+  font-size: 1.125rem !important;
+}
+
+.btn-disabled {
+  @apply py-2 px-3 bg-indigo-400 text-slate-300 rounded-lg opacity-45 cursor-not-allowed;
+}
+
+.btn-enabled {
+  @apply py-2 px-3 bg-indigo-600 text-white rounded-lg cursor-pointer;
+
+  /* Mouse hover effect */
+
+  &:hover {
+    @apply bg-indigo-700;
+  }
+}
+
+.btn {
+  @apply py-2 px-3 text-white rounded-lg cursor-pointer;
+}
+
+.btn-primary {
+  @apply bg-blue-500 hover:bg-blue-600;
+}
+
+.btn-secondary {
+  @apply bg-gray-500  hover:bg-gray-600;
+}
+
+.btn-warning {
+  @apply bg-orange-400  hover:bg-orange-500;
+}
+
+.btn-danger {
+  @apply bg-red-600  hover:bg-red-400;
+}
+
+.btn-success {
+  @apply bg-green-500 hover:bg-green-600;
+}
+
+.btn-info {
+  @apply bg-blue-400 hover:bg-blue-500;
+}
+
+.table-container {
+  @apply overflow-x-auto overflow-y-hidden w-[650px] mx-auto max-w-full md:w-[800px] md:mx-auto
+}
+
+.loading-shade {
+  @apply fixed inset-0 bg-black/50 z-[9999999] flex items-center justify-center;
+}
+
+th {
+  @apply text-teal-400 text-sm md:text-lg   bg-gray-900/70
+}
+
+td {
+  @apply text-sm md:text-[1rem] text-gray-300;
+}
+
+i {
+  @apply cursor-pointer;
+}
+
+label {
+  @apply text-slate-300;
+}
+
+.isIncome {
+  @apply text-green-400 font-semibold;
+}
+
+.isExpense {
+  @apply text-orange-400 font-semibold;
+}
+
+.hide-on-mobile {
+  @apply hidden md:table-cell;
+}
+
+.myCenter {
+  @apply flex justify-center items-center;
+}
+
+.table {
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+  width: 100%;
+}
+
+.table th,
+.table td {
+  padding: 0.5rem;
+  vertical-align: top;
+  border-top: 1px solid #c7cacb;
+  overflow: hidden;
+  font-size: 1rem !important;
+}
+
+.table th,
+.table td:last-child {
+  border-bottom: 1px solid grey;
+}
+
+.table th {
+  text-align: right;
+  vertical-align: top;
+  padding-right: 5px;
+  height: 2rem;
+  width: 36%;
+  font-size: 1rem !important;
+  font-weight: 500 !important;
+}
+
+/* PrimeNg Dialog */
+.p-dialog .p-dialog-header .p-dialog-title {
+  font-weight: 700;
+  font-size: 1.50rem;
+  font-family: 'Thasadith', sans-serif;
+  padding-left: 0.5rem;
+  color: #67f76e;
+}
