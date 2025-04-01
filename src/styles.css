@@ -116,6 +116,10 @@ label {
   @apply flex justify-center items-center;
 }
 
+.mySummary {
+  @apply flex items-center justify-around bg-gray-900 font-thasadith font-bold text-base md:text-xl mb-10 leading-12;
+}
+
 .table {
   border-collapse: collapse;
   margin-bottom: 1rem;
@@ -141,6 +145,8 @@ label {
   vertical-align: top;
   padding-right: 5px;
   height: 2rem;
+  position: sticky !important;
+  z-index: 100;
   width: 36%;
   font-size: 1rem !important;
   font-weight: 500 !important;
@@ -153,4 +159,17 @@ label {
   font-family: 'Thasadith', sans-serif;
   padding-left: 0.5rem;
   color: #67f76e;
+}
+
+/** calendar */
+.p-datepicker-weekday {
+  color: lightskyblue !important;
+}
+
+.negative-balance {
+  color: red;
+}
+
+.positive-balance {
+  color: #90ee90; /* สีเขียวเลม่อน */
 }

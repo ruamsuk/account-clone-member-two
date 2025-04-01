@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 import { BloodPressure } from '../models/blood-pressure.model';
 import { ThaiDatePipe } from '../pipe/thai-date.pipe';
 import { BloodService } from '../services/blood.service';
-import { MessagesService } from '../services/messages.service';
+import { ToastService } from '../services/toast.service';
 import { SharedModule } from '../shared/shared.module';
 import { PrintDialogComponent } from './print-dialog.component';
 
@@ -22,7 +22,7 @@ import { PrintDialogComponent } from './print-dialog.component';
       }
       <p-card [style]="{ 'min-width': '30vw' }">
         <p
-          class="hidden flex justify-content-center text-gray-200 tasadith text-2xl -mt-4 xs:text-sm"
+          class="hidden md:flex justify-content-center text-gray-200 tasadith text-2xl -mt-4 xs:text-sm"
         >
           Blood Pressure Time Period
         </p>
@@ -178,7 +178,7 @@ export class BloodTimePeriodComponent implements OnDestroy, OnInit {
   constructor(
     private dialogService: DialogService,
     private bloodService: BloodService,
-    private message: MessagesService,
+    private message: ToastService,
   ) {
   }
 
@@ -200,8 +200,7 @@ export class BloodTimePeriodComponent implements OnDestroy, OnInit {
 
       /** avoid same date or end less than begin */
       if (starter >= ender) {
-        this.message.addMessage(
-          'error',
+        this.message.showError(
           'Error',
           'วันเริ่มต้นกับวันสิ้นสุดต้องคนละวันกัน',
         );

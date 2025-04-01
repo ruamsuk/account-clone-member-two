@@ -1,17 +1,11 @@
-import {
-  Component,
-  OnDestroy,
-  OnInit,
-  Renderer2,
-  ViewChild,
-} from '@angular/core';
-import { SharedModule } from '../shared/shared.module';
+import { Component, inject, OnDestroy, OnInit, Renderer2, ViewChild, } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { TimeOptions } from '../models/blood-pressure.model';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { BloodService } from '../services/blood.service';
-import { MessagesService } from '../services/messages.service';
 import { InputMask } from 'primeng/inputmask';
+import { TimeOptions } from '../models/blood-pressure.model';
+import { BloodService } from '../services/blood.service';
+import { ToastService } from '../services/toast.service';
+import { SharedModule } from '../shared/shared.module';
 
 @Component({
   selector: 'app-blood-add-edit',
@@ -19,8 +13,8 @@ import { InputMask } from 'primeng/inputmask';
   imports: [SharedModule],
   template: `
     <form [formGroup]="bpForm" (ngSubmit)="onSubmit()">
-      <hr class="h-px bg-gray-200 border-0" />
-      <input type="hidden" name="hidden" />
+      <hr class="h-px bg-gray-200 border-0"/>
+      <input type="hidden" name="hidden"/>
       <div class="card p-fluid flex flex-wrap gap-3">
         <div class="w-full">
           <span class="sarabun block mb-2"> Date </span>
@@ -47,7 +41,7 @@ import { InputMask } from 'primeng/inputmask';
             class="w-full"
             hidden="hidden"
           />
-          <hr class="h-px bg-gray-200 border-0" />
+          <hr class="h-px bg-gray-200 border-0"/>
         </div>
         <div class="flex-grow-1" formGroupName="morning">
           <span class="mb-2 block sarabun">BP1 Morning </span>
@@ -82,7 +76,7 @@ import { InputMask } from 'primeng/inputmask';
             class="w-full"
             hidden="hidden"
           />
-          <hr class="h-px bg-gray-200 border-0" />
+          <hr class="h-px bg-gray-200 border-0"/>
         </div>
         <div class="w-full" formGroupName="evening">
           <span class="mb-2 block sarabun">BP1 Evening </span>
@@ -134,15 +128,15 @@ export class BloodAddEditComponent implements OnInit, OnDestroy {
   @ViewChild('bp1Evening') bp1Evening: InputMask | undefined;
   @ViewChild('bp2Evening') bp2Evening: InputMask | undefined;
 
+  bloodService = inject(BloodService);
   bpForm!: FormGroup;
   timeOptions: TimeOptions[] | undefined;
 
   constructor(
-    private bloodService: BloodService,
     private fb: FormBuilder,
     private ref: DynamicDialogRef,
     private config: DynamicDialogConfig,
-    private message: MessagesService,
+    private message: ToastService,
     private renderer: Renderer2,
   ) {
     this.bpForm = this.fb.group({
@@ -177,8 +171,8 @@ export class BloodAddEditComponent implements OnInit, OnDestroy {
     }
 
     this.timeOptions = [
-      { name: 'เช้า', code: 'morning' },
-      { name: 'เย็น', code: 'evening' },
+      {name: 'เช้า', code: 'morning'},
+      {name: 'เย็น', code: 'evening'},
     ];
   }
 
@@ -209,12 +203,11 @@ export class BloodAddEditComponent implements OnInit, OnDestroy {
       const data = this.bpForm.value;
       this.bloodService.updateBlood(data.id, data).subscribe({
         error: (error) => {
-          this.message.addMessage('error', 'Error', error.message);
+          this.message.showError('Error', error.message);
           console.log(JSON.stringify(error, null, 2));
         },
         complete: () => {
-          this.message.addMessage(
-            'success',
+          this.message.showSuccess(
             'Successfully',
             'Update Blood pressure successfully',
           );
@@ -225,14 +218,13 @@ export class BloodAddEditComponent implements OnInit, OnDestroy {
       // new record
       this.bloodService.createBlood(this.bpForm.value).subscribe({
         next: () => {
-          this.message.addMessage(
-            'success',
+          this.message.showSuccess(
             'Successfully',
             'Create Blood pressure successfully',
           );
         },
         error: (error) => {
-          this.message.addMessage('error', 'Error', error.message);
+          this.message.showError('Error', error.message);
         },
         complete: () => this.close(),
       });

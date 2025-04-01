@@ -9,7 +9,7 @@ import { BloodPressure } from '../models/blood-pressure.model';
 import { ThaiDatePipe } from '../pipe/thai-date.pipe';
 import { AuthService } from '../services/auth.service';
 import { BloodService } from '../services/blood.service';
-import { MessagesService } from '../services/messages.service';
+import { ToastService } from '../services/toast.service';
 import { SharedModule } from '../shared/shared.module';
 import { BloodAddEditComponent } from './blood-add-edit.component';
 
@@ -205,14 +205,14 @@ export class BloodListComponent implements OnInit, OnDestroy {
     private confService: ConfirmationService,
     private dialogService: DialogService,
     private bloodService: BloodService,
-    private messageService: MessagesService,
+    private messageService: ToastService,
     private destroyRef: DestroyRef,
   ) {
     this.searchControl = new FormControl();
   }
 
   ngOnInit() {
-    this.authService.isAdmin().then((isAdmin) => {
+    this.authService.isAdmin().subscribe((isAdmin) => {
       this.admin = isAdmin;
     });
     this.getBloodList();
@@ -224,7 +224,7 @@ export class BloodListComponent implements OnInit, OnDestroy {
     this.bloods$ = this.bloodService.getBloods().pipe(
       takeUntilDestroyed(this.destroyRef),
       catchError((error: Error) => {
-        this.messageService.addMessage('error', 'Error', error.message);
+        this.messageService.showError('Error', error.message);
         return of([]);
       }),
     );
@@ -280,21 +280,20 @@ export class BloodListComponent implements OnInit, OnDestroy {
       accept: () => {
         this.bloodService.deleteBlood(morning).subscribe({
           next: () => {
-            this.messageService.addMessage(
-              'success',
+            this.messageService.showSuccess(
               'Successfully',
               'ลบข้อมูลเรียบร้อยแล้ว',
             );
           },
           error: (error: any) => {
-            this.messageService.addMessage('error', 'Error', error.message);
+            this.messageService.showError('Error', error.message);
           },
           complete: () => {
           },
         });
       },
       reject: () => {
-        this.messageService.addMessage('info', 'Warning', 'ยกเลิกการลบแล้ว!');
+        this.messageService.showInfo('Warning', 'ยกเลิกการลบแล้ว!');
       },
     });
   }

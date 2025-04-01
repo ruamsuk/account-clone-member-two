@@ -4,7 +4,7 @@ import Docxtemplater from 'docxtemplater';
 import { saveAs } from 'file-saver';
 import PizZip from 'pizzip';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { MessagesService } from '../services/messages.service';
+import { ToastService } from '../services/toast.service';
 import { SharedModule } from '../shared/shared.module';
 
 interface Record {
@@ -49,7 +49,7 @@ export class PrintDialogComponent implements OnDestroy {
   constructor(
     public ref: DynamicDialogRef,
     private config: DynamicDialogConfig,
-    private messageService: MessagesService,
+    private messageService: ToastService,
   ) {
     if (this.config.data && Array.isArray(this.config.data)) {
       const records: Record[] = this.config.data;
@@ -88,12 +88,12 @@ export class PrintDialogComponent implements OnDestroy {
             })
             .catch(renderError => {
               console.error('⚠️ Error rendering document:', renderError);
-              this.messageService.addMessage('error', 'Error', 'พบปัญหาในการสร้างเอกสาร กรุณาตรวจสอบ console');
+              this.messageService.showError('Error', 'พบปัญหาในการสร้างเอกสาร กรุณาตรวจสอบ console');
             });
         })
         .catch(fetchError => {
           console.error('⚠️ Error:', fetchError);
-          this.messageService.addMessage('error', 'Error', `หาไฟล์ Word template ไม่พบ หรือมีปัญหา: ${fetchError.message}`);
+          this.messageService.showError('Error', `หาไฟล์ Word template ไม่พบ หรือมีปัญหา: ${fetchError.message}`);
         });
     }
   }

@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormControl } from '@angular/forms';
 import { ConfirmationService } from 'primeng/api';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { Observable } from 'rxjs';
@@ -7,7 +7,7 @@ import { BloodPressure } from '../models/blood-pressure.model';
 import { ThaiDatePipe } from '../pipe/thai-date.pipe';
 import { AuthService } from '../services/auth.service';
 import { BloodService } from '../services/blood.service';
-import { MessagesService } from '../services/messages.service';
+import { ToastService } from '../services/toast.service';
 import { SharedModule } from '../shared/shared.module';
 import { BloodAddEditComponent } from './blood-add-edit.component';
 import { PrintDialogComponent } from './print-dialog.component';
@@ -15,7 +15,7 @@ import { PrintDialogComponent } from './print-dialog.component';
 @Component({
   selector: 'app-blood-year-period',
   standalone: true,
-  imports: [SharedModule, FormsModule, ReactiveFormsModule, ThaiDatePipe],
+  imports: [SharedModule, ThaiDatePipe],
   template: `
     <div class="flex justify-content-center align-items-center h-15rem -mt-4">
       @if (loading) {
@@ -25,7 +25,7 @@ import { PrintDialogComponent } from './print-dialog.component';
       }
       <p-card [style]="{ 'min-width': '30vw' }">
         <p
-          class="hidden flex justify-content-center text-gray-200 tasadith text-2xl -mt-4 xs:text-sm"
+          class="hidden md:flex justify-content-center text-gray-200 tasadith text-2xl -mt-4 xs:text-sm"
         >
           Blood Pressure Year Period
         </p>
@@ -218,7 +218,7 @@ export class BloodYearPeriodComponent implements OnInit, OnDestroy {
     private bloodService: BloodService,
     private confirmService: ConfirmationService,
     private dialogService: DialogService,
-    private messageService: MessagesService,
+    private messageService: ToastService,
   ) {
   }
 
@@ -227,7 +227,7 @@ export class BloodYearPeriodComponent implements OnInit, OnDestroy {
     for (let i = 0; i < 5; i++) {
       this.years.push({label: `${currentYear - i}`, value: currentYear - i});
     }
-    this.authService.isAdmin().then((isAdmin) => {
+    this.authService.isAdmin().subscribe((isAdmin) => {
       this.admin = isAdmin;
     });
   }
@@ -299,21 +299,20 @@ export class BloodYearPeriodComponent implements OnInit, OnDestroy {
       accept: () => {
         this.bloodService.deleteBlood(morning).subscribe({
           next: () => {
-            this.messageService.addMessage(
-              'warn',
+            this.messageService.showWarn(
               'Warning',
               'ลบข้อมูลเรียบร้อยแล้ว',
             );
           },
           error: (error: any) => {
-            this.messageService.addMessage('error', 'Error', error.message);
+            this.messageService.showError('Error', error.message);
           },
           complete: () => {
           },
         });
       },
       reject: () => {
-        this.messageService.addMessage('warn', 'Warning', 'ยกเลิกการลบแล้ว!');
+        this.messageService.showWarn('Warning', 'ยกเลิกการลบแล้ว!');
       },
     });
   }

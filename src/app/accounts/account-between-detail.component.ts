@@ -9,6 +9,7 @@ import { AccountsService } from '../services/accounts.service';
 import { AuthService } from '../services/auth.service';
 import { ToastService } from '../services/toast.service';
 import { SharedModule } from '../shared/shared.module';
+import { AccountsComponent } from './accounts.component';
 
 @Component({
   selector: 'app-account-between-detail',
@@ -42,7 +43,7 @@ import { SharedModule } from '../shared/shared.module';
           </div>
           <div class="flex grow">
             <p-floatlabel variant="on">
-              <p-iconfield>
+              <p-iconfield pTooltip="หาข้อมูลใหม่">
                 <input
                   type="text"
                   pInputText
@@ -56,7 +57,7 @@ import { SharedModule } from '../shared/shared.module';
         </div>
       </p-card>
     </div>
-    @if (account) {
+    @if (account && isShow()) {
       <div class="table-container myCenter mt-3">
         <p-table #tb
                  [value]="account"
@@ -129,7 +130,7 @@ import { SharedModule } from '../shared/shared.module';
                 <p-message
                   severity="warn"
                   icon="pi pi-exclamation-circle"
-                  text="ไม่พบข้อมูลรายจ่าย" styleClass="h-full"/>
+                  text="ไม่พบข้อมูลรายการ: {{title}}" styleClass="h-full"/>
               </td>
             </tr>
           </ng-template>
@@ -176,6 +177,7 @@ export class AccountBetweenDetailComponent implements OnInit {
   title: string = '';
   loading = signal(false);
   isAdmin = signal(false);
+  isShow = signal(false);
 
   results$: Observable<any> = new Observable();
 
@@ -206,7 +208,8 @@ export class AccountBetweenDetailComponent implements OnInit {
       selectedDates &&
       selectedDates.length === 2 &&
       selectedDates[0] &&
-      selectedDates[1]
+      selectedDates[1] &&
+      value !== 'null'
     ) {
       const start = selectedDates[0];
       const end = selectedDates[1];
@@ -232,9 +235,11 @@ export class AccountBetweenDetailComponent implements OnInit {
             this.account = data;
             this.totalExpenses = data;
             this.loading.set(false);
+            this.isShow.set(true);
           }),
           catchError((err: any) => {
             this.loading.set(false);
+            this.isShow.set(false);
             this.toastService.showError('Error', err.message);
             console.log(err.message);
             return throwError(() => err);
@@ -270,7 +275,24 @@ export class AccountBetweenDetailComponent implements OnInit {
   }
 
   showDialog(account: any) {
+    let header = account ? 'แก้ไขรายการ' : 'เพิ่มรายการ';
 
+    this.dialogRef = this.dialogService.open(AccountsComponent, {
+      data: account,
+      header: header,
+      width: '360px',
+      contentStyle: {overflow: 'auto'},
+      breakpoints: {
+        '960px': '360px',
+        '640px': '360px',
+        '390px': '360px',
+      },
+    });
+    this.dialogRef.onClose.subscribe((data: any) => {
+      if (data) {
+        this.resultDetails(this.title);
+      }
+    });
   }
 
   getTotal() {
@@ -278,7 +300,8 @@ export class AccountBetweenDetailComponent implements OnInit {
   }
 
   resetAll(): void {
-    this.searchDetail.setValue('');
-    this.selectedDates.setValue('');
+    this.searchDetail.reset();
+    this.selectedDates.reset();
+    this.isShow.set(false);
   }
 }

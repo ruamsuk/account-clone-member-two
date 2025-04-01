@@ -191,7 +191,7 @@ export class AccountsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.dialogRef) this.dialogRef.destroy();
+    if (this.dialogRef) this.dialogRef.close();
   }
 
   /**
