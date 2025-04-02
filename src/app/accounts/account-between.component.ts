@@ -348,16 +348,9 @@ export class AccountBetweenComponent implements OnInit, OnDestroy {
   }
 
   confirm(event: MouseEvent, id: string) {
-    this.confirmService.confirm(
-      event,
-      id,
-      this.accountsService,
-      this.accountsService.deleteAccount.bind(this.accountsService),
-      () => {
-        console.log('Account deleted successfully');
-      },
-      (error: any) => console.error('Error deleting account: ', error),
-    );
+    this.confirmService.confirm(event, id, this.accountsService, this.accountsService.deleteAccount.bind(this.accountsService), () => {
+      console.log('Account deleted successfully');
+    }, (error: any) => console.error('Error deleting account: ', error));
   }
 
   ngOnDestroy(): void {

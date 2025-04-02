@@ -8,12 +8,15 @@ export interface Credit {
   isCashback: boolean;
   remark?: string;
 }
+
 export interface CreditData {
   id?: string;
   date: Date;
   details: string;
   amount: number;
   isCashback: boolean;
+  created: Date;
+  modify: Date;
   remark?: string;
 }
 

@@ -173,3 +173,14 @@ label {
 .positive-balance {
   color: #90ee90; /* สีเขียวเลม่อน */
 }
+
+i.pi {
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.icons {
+  position: relative;
+  right: 30px;
+}

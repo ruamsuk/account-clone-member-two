@@ -148,17 +148,6 @@ import { CrudMonthlyComponent } from './crud-monthly/crud-monthly.component';
     </div>
   `,
   styles: `
-    i.pi {
-      &:hover {
-        cursor: pointer;
-      }
-    }
-
-    .icons {
-      position: relative;
-      right: 30px;
-    / / top: 10 px;
-    }
   `,
 })
 export class MonthlyComponent implements OnDestroy {
