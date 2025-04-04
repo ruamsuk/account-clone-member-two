@@ -25,13 +25,13 @@ import { CrudMonthlyComponent } from './crud-monthly/crud-monthly.component';
           <p-progressSpinner strokeWidth="4" ariaLabel="loading"/>
         </div>
       }
-      <div class="flex justify-content-center align-items-center">
+      <div class="flex justify-center items-center">
         <div class="mt-2">
           <div
-            class="flex align-items-center justify-content-center bg-black-alpha-10 shadow-3"
+            class="hidden md:flex items-center justify-center"
           >
             <span
-              class="tasadith text-blue-600 font-bold md:text-3xl xl:text-2xl line-height-4"
+              class="font-thasadith text-blue-500 font-semibold text-base md:text-2xl "
             >
               กำหนดวันเริ่มและสิ้นสุดของเดือน
             </span>
@@ -40,6 +40,7 @@ import { CrudMonthlyComponent } from './crud-monthly/crud-monthly.component';
             #tb
             [value]="monthly"
             [rows]="10"
+            [rowHover]="true"
             [rowsPerPageOptions]="[5, 10, 20, 30]"
             [paginator]="true"
             [globalFilterFields]="['details', 'remark']"
@@ -48,8 +49,8 @@ import { CrudMonthlyComponent } from './crud-monthly/crud-monthly.component';
             [tableStyle]="{ 'min-width': '40rem' }"
             styleClass="p-datatable-striped z-0"
           >
-            <ng-template pTemplate="caption">
-              <div class="flex align-items-center justify-content-between">
+            <ng-template #caption>
+              <div class="flex items-center justify-between">
                 <span>
                   <p-button
                     (click)="showDialog(Monthly)"
@@ -80,33 +81,33 @@ import { CrudMonthlyComponent } from './crud-monthly/crud-monthly.component';
                 </p-iconField>
               </div>
             </ng-template>
-            <ng-template pTemplate="header">
+            <ng-template #header>
               <tr>
                 <th pSortableColumn="month">
-                  <div class="flex align-items-center sm:ml-0">
+                  <div class="text-teal-300">
                     เดือน
                     <p-sortIcon field="เดือน"/>
                   </div>
                 </th>
                 <th pSortableColumn="year">
-                  <div class="flex align-items-center sm:ml-0">
+                  <div class="text-teal-300">
                     ปี
                     <p-sortIcon field="ปี"/>
                   </div>
                 </th>
                 <th>
-                  <div class="flex align-items-center">วันเริ่มต้น</div>
+                  <div class="text-teal-300">วันเริ่มต้น</div>
                 </th>
                 <th>
-                  <div class="flex align-items-center">วันสิ้นสุด</div>
+                  <div class="text-teal-300">วันสิ้นสุด</div>
                 </th>
                 <th>
-                  <div class="flex align-items-center">Action</div>
+                  <div class="text-teal-300">Action</div>
                 </th>
                 <th></th>
               </tr>
             </ng-template>
-            <ng-template pTemplate="body" let-month>
+            <ng-template #body let-month>
               <tr>
                 <td>{{ month.month }}</td>
                 <td>{{ month.year | christianToThaiYear }}</td>
@@ -118,27 +119,29 @@ import { CrudMonthlyComponent } from './crud-monthly/crud-monthly.component';
                       pTooltip="แก้ไข"
                       (click)="showDialog(month)"
                       tooltipPosition="bottom"
-                      class="pi pi-pen-to-square mr-2 ml-2 text-orange-600"
+                      class="pi pi-pen-to-square mr-2 ml-2 text-green-300"
                     ></i>
                     <p-confirmPopup/>
                     <i
                       pTooltip="ลบข้อมูล"
                       (click)="conf($event, month.id)"
                       tooltipPosition="bottom"
-                      class="pi pi-trash text-red-500"
+                      class="pi pi-trash text-red-400"
                     ></i>
                   }
                 </td>
                 <td></td>
               </tr>
             </ng-template>
-            <ng-template pTemplate="emptymessage">
+            <ng-template #emptymessage>
               <tr>
                 <td
                   colspan="6"
-                  class="text-center text-orange-400 text-2xl font-bold anuphon"
                 >
-                  ไม่พบข้อมูล
+                  <p-message
+                    severity="warn"
+                    icon="pi pi-exclamation-circle"
+                    text="ไม่พบข้อมูล" styleClass="h-full"/>
                 </td>
               </tr>
             </ng-template>

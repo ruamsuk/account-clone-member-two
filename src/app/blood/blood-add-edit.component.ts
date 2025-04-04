@@ -15,23 +15,22 @@ import { SharedModule } from '../shared/shared.module';
     <form [formGroup]="bpForm" (ngSubmit)="onSubmit()">
       <hr class="h-px bg-gray-200 border-0"/>
       <input type="hidden" name="hidden"/>
-      <div class="card p-fluid flex flex-wrap gap-3">
+      <div class="card p-fluid flex flex-wrap gap-3 p-5">
         <div class="w-full">
-          <span class="sarabun block mb-2"> Date </span>
-          <p-calendar
+          <span class="block mb-2"> Date </span>
+          <p-datePicker
             [iconDisplay]="'input'"
             [showIcon]="true"
-            dateFormat="d M yy"
             appendTo="body"
             inputId="icondisplay"
             formControlName="date"
             name="date"
-            class="w-full"
+            styleClass="w-full"
             (onSelect)="onDateSelect()"
           />
         </div>
         <div class="w-full">
-          <span class="mb-2 block sarabun">Morning </span>
+          <span class="mb-2 block">Morning </span>
           <input
             pInputText
             type="text"
@@ -50,7 +49,7 @@ import { SharedModule } from '../shared/shared.module';
             formControlName="bp1"
             mask="999/99 P99"
             placeholder="120/80 P60"
-            class="w-full"
+            styleClass="w-full"
             (onComplete)="moveFocus(bp2Morning)"
           ></p-inputMask>
         </div>
@@ -61,7 +60,7 @@ import { SharedModule } from '../shared/shared.module';
             formControlName="bp2"
             mask="999/99 P99"
             placeholder="120/80 P60"
-            class="w-full"
+            styleClass="w-full"
             (onComplete)="moveFocus(bp1Evening)"
           ></p-inputMask>
         </div>
@@ -85,7 +84,7 @@ import { SharedModule } from '../shared/shared.module';
             formControlName="bp1"
             mask="999/99 P99"
             placeholder="120/80 P60"
-            class="w-full"
+            styleClass="w-full"
             (onComplete)="moveFocus(bp2Evening)"
           ></p-inputMask>
         </div>
@@ -96,27 +95,38 @@ import { SharedModule } from '../shared/shared.module';
             formControlName="bp2"
             mask="999/99 P99"
             placeholder="120/80 P60"
-            class="w-full"
+            styleClass="w-full"
           ></p-inputMask>
         </div>
       </div>
       <!--/ card flex-->
 
-      <div class="flex mt-5 mb-1">
-        <p-button
-          label="Cancel"
-          severity="secondary"
-          styleClass="w-full"
-          class="w-full mr-2"
-          (onClick)="close()"
-        />
-        <p-button
-          label="Save"
-          [disabled]="bpForm.invalid"
-          styleClass="w-full"
-          class="w-full"
-          (onClick)="onSubmit()"
-        />
+      <div class="flex mt-5 mb-1 gap-2">
+        <div class="grow">
+          <p-button
+            label="Cancel"
+            severity="secondary"
+            styleClass="w-full"
+            class="w-full mr-2"
+            (click)="close()"
+          />
+        </div>
+        <div class="grow">
+          <button [disabled]="bpForm.invalid"
+                  [ngClass]="{
+              'btn btn-disabled': bpForm.invalid,
+              'btn btn-info': bpForm.valid,
+              }" type="submit" class="w-full">
+            Save
+          </button>
+        </div>
+        <!--        <p-button-->
+        <!--          label="Save"-->
+        <!--          [disabled]="bpForm.invalid"-->
+        <!--          styleClass="w-full"-->
+        <!--          class="w-full"-->
+        <!--          (click)="onSubmit()"-->
+        <!--        />-->
       </div>
     </form>
   `,

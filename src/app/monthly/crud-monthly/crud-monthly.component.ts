@@ -17,7 +17,7 @@ import { SharedModule } from '../../shared/shared.module';
     <form [formGroup]="monthlyForm" (ngSubmit)="saveMonthly($event)">
       <input type="hidden"/>
       <div class="formgrid grid">
-        <div class="field col">
+        <div class="field col my-3">
           <label for="treeSelect" class="ml-2">เดือน</label>
           <p-treeSelect
             class=""
@@ -28,7 +28,7 @@ import { SharedModule } from '../../shared/shared.module';
             placeholder="เลิอกเดือน"
           />
         </div>
-        <div class="field col">
+        <div class="field col my-3">
           <label for="treeSelect" class="ml-2">ปี</label>
           <p-treeSelect
             class=""
@@ -42,7 +42,7 @@ import { SharedModule } from '../../shared/shared.module';
       </div>
       <div class="field">
         <label for="date">วันเริ่มต้น</label>
-        <p-calendar
+        <p-datePicker
           [iconDisplay]="'input'"
           [showIcon]="true"
           [inputStyle]="{ width: '90vw' }"
@@ -50,13 +50,12 @@ import { SharedModule } from '../../shared/shared.module';
           inputId="icondisplay"
           formControlName="datestart"
           name="datestart"
-          dateFormat="d M yy"
           class="w-full"
         />
       </div>
-      <div class="field">
+      <div class="field my-3">
         <label for="date">วันสิ้นสุด</label>
-        <p-calendar
+        <p-datePicker
           [iconDisplay]="'input'"
           [showIcon]="true"
           [inputStyle]="{ width: '90vw' }"
@@ -64,13 +63,12 @@ import { SharedModule } from '../../shared/shared.module';
           inputId="icondisplay"
           formControlName="dateend"
           name="dateend"
-          dateFormat="d M yy"
           class="w-full"
         />
       </div>
-      <div class="field">
+      <div class="field my-3">
         <hr class="h-px bg-gray-200 border-0 mb-1"/>
-        <div class="flex mt-2 mb-1">
+        <div class="flex mt-4 mb-1">
           <p-button
             label="Cancel"
             severity="secondary"
@@ -91,9 +89,6 @@ import { SharedModule } from '../../shared/shared.module';
     </form>
   `,
   styles: `
-    label {
-      font-family: Sarabun, sans-serif !important;
-    }
   `,
 })
 export class CrudMonthlyComponent implements OnInit, OnDestroy {

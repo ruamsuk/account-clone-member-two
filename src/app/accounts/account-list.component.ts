@@ -122,7 +122,7 @@ import { AccountsComponent } from './accounts.component';
               </td>
               <td [ngClass]="{ isIncome: account.isInCome }">
                 @if (account.isInCome) {
-                  <span class="flex justify-items-start">
+                  <span class="flex justify-start">
                     รายรับ
                   </span>
                 }

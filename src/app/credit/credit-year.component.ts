@@ -96,6 +96,9 @@ interface YearResults {
                 </ng-template>
                 <ng-template #summary>
                   <hr class="h-px bg-gray-300 border-0"/>
+                  <div class="flex justify-start font-thasadith text-amber-200 font-semibold text-base md:text-xl mt-3">
+                    ผลสรุปการใช้จ่าย
+                  </div>
                   <table class="w-full font-thasadith text-base md:text-xl mt-5">
                     <tbody>
                     <tr>

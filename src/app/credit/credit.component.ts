@@ -80,7 +80,7 @@ import { SharedModule } from '../shared/shared.module';
             <div class="grow">
               <button [disabled]="creditForm.invalid"
                       [ngClass]="{
-              'btn-disabled': creditForm.invalid,
+              'btn btn-disabled': creditForm.invalid,
               'btn btn-info': creditForm.valid,
               }" type="submit" class="w-full">
                 Save

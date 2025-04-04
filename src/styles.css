@@ -189,3 +189,11 @@ i.pi {
   position: relative;
   right: 30px;
 }
+
+.high-bp {
+  color: red;
+}
+
+.normal-bp {
+  color: inherit; /* หรือสีอื่นที่ต้องการ */
+}
