@@ -1,12 +1,12 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { ConfirmationService } from 'primeng/api';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { catchError, debounceTime, distinctUntilChanged, Observable, of, switchMap, take, tap, throwError } from 'rxjs';
 import { Account } from '../models/account.model';
 import { ThaiDatePipe } from '../pipe/thai-date.pipe';
 import { AccountsService } from '../services/accounts.service';
 import { AuthService } from '../services/auth.service';
+import { ConfirmService } from '../services/confirm.service';
 import { ToastService } from '../services/toast.service';
 import { SharedModule } from '../shared/shared.module';
 import { AccountsComponent } from './accounts.component';
@@ -165,7 +165,7 @@ export class AccountBetweenDetailComponent implements OnInit {
   authService = inject(AuthService);
   toastService = inject(ToastService);
   accountsService = inject(AccountsService);
-  confirmService = inject(ConfirmationService);
+  confirmService = inject(ConfirmService);
   dialogService = inject(DialogService);
 
   selectedDates = new FormControl();
@@ -250,28 +250,9 @@ export class AccountBetweenDetailComponent implements OnInit {
   }
 
   confirm(event: Event, id: string) {
-    this.confirmService.confirm({
-      target: event.target as EventTarget,
-      message: 'Do you want to delete this record?',
-      icon: 'pi pi-info-circle',
-      rejectButtonProps: {
-        label: 'Cancel',
-        severity: 'secondary',
-        outlined: true
-      },
-      acceptButtonProps: {
-        label: 'Delete',
-        severity: 'danger'
-      },
-      accept: () => {
-        this.accountsService.deleteAccount(id)
-          .subscribe({
-            next: () => this.toastService.showSuccess('Delete', 'Deleted Successfully'),
-            error: err => this.toastService.showError('Error', err.message),
-          });
-      },
-      reject: () => this.toastService.showInfo('Info Message', 'You have rejected')
-    });
+    this.confirmService.confirm(event, id, this.accountsService, this.accountsService.deleteAccount.bind(this.accountsService), () => {
+      console.log('Account deleted successfully');
+    }, (error: any) => console.error('Error deleting account: ', error));
   }
 
   showDialog(account: any) {

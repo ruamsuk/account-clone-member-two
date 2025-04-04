@@ -44,7 +44,7 @@ export class CreditService {
     const endDate = new Date(year, month + 1, 12);
 
     const creditQuery = query(
-      collection(this.firestore, 'credits'),
+      collection(this.firestore, 'credit'),
       where('date', '>=', startDate),
       where('date', '<=', endDate),
     );

@@ -134,16 +134,6 @@ export class CreditComponent implements OnInit, OnDestroy {
       : 'รายจ่าย';
   }
 
-  get isAmountValid(): any {
-    const control = this.creditForm.get('amount');
-    const isInValid = control?.invalid && control.touched;
-    if (isInValid) {
-      return control.hasError('required')
-        ? 'This field is required'
-        : 'Enter a valid amount';
-    }
-  }
-
   saveCredit() {
     if (this.creditForm.invalid) return;
 
