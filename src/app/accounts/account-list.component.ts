@@ -1,7 +1,6 @@
 import { Component, HostListener, inject, OnInit, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl } from '@angular/forms';
-import { ConfirmationService } from 'primeng/api';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { Table } from 'primeng/table';
 import { catchError, Observable, tap, throwError } from 'rxjs';
@@ -9,6 +8,7 @@ import { Account } from '../models/account.model';
 import { ThaiDatePipe } from '../pipe/thai-date.pipe';
 import { AccountsService } from '../services/accounts.service';
 import { AuthService } from '../services/auth.service';
+import { ConfirmService } from '../services/confirm.service';
 import { ToastService } from '../services/toast.service';
 import { SharedModule } from '../shared/shared.module';
 import { AccountDetailComponent } from './account-detail.component';
@@ -138,7 +138,7 @@ import { AccountsComponent } from './accounts.component';
 export class AccountListComponent implements OnInit {
   private authService: AuthService = inject(AuthService);
   private accountsService: AccountsService = inject(AccountsService);
-  private confirmService: ConfirmationService = inject(ConfirmationService);
+  private confirmService: ConfirmService = inject(ConfirmService);
   private dialogService: DialogService = inject(DialogService);
   private toastService = inject(ToastService);
 
@@ -224,27 +224,16 @@ export class AccountListComponent implements OnInit {
   }
 
   confirmDelete(event: Event, id: string) {
-    this.confirmService.confirm({
-      target: event.target as EventTarget,
-      message: 'Do you want to delete this record?',
-      icon: 'pi pi-info-circle',
-      rejectButtonProps: {
-        label: 'Cancel',
-        severity: 'secondary',
-        outlined: true
+    this.confirmService.confirm(
+      event,
+      id,
+      this.accountsService,
+      this.accountsService.deleteAccount.bind(this.accountsService),
+      () => {
       },
-      acceptButtonProps: {
-        label: 'Delete',
-        severity: 'danger'
-      },
-      accept: () => {
-        this.accountsService.deleteAccount(id)
-          .subscribe({
-            next: () => this.toastService.showSuccess('Delete', 'Deleted Successfully'),
-            error: err => this.toastService.showError('Error', err.message),
-          });
-      },
-      reject: () => this.toastService.showInfo('Info Message', 'You have rejected')
-    });
+      (error) => {
+        console.error(error);
+      }
+    );
   }
 }

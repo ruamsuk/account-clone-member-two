@@ -80,17 +80,22 @@ html {
   @apply overflow-x-auto overflow-y-hidden w-[650px] mx-auto max-w-full md:w-[800px] md:mx-auto
 }
 
+.table-container-credit {
+  @apply overflow-x-auto overflow-y-hidden w-[400px] mx-auto max-w-full
+
+}
+
 .loading-shade {
   @apply fixed inset-0 bg-black/50 z-[9999999] flex items-center justify-center;
 }
 
-th {
+/*th {
   @apply text-teal-400 text-sm md:text-lg   bg-gray-900/70
 }
 
 td {
   @apply text-sm md:text-[1rem] text-gray-300;
-}
+}*/
 
 i {
   @apply cursor-pointer;

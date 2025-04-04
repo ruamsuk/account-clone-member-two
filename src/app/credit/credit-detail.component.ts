@@ -56,6 +56,7 @@ import { SharedModule } from '../shared/shared.module';
     </div>
   `,
   styles: `
+
   `,
 })
 export class CreditDetailComponent {
