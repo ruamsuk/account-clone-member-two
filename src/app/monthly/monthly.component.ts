@@ -1,6 +1,6 @@
-import { Component, DestroyRef, inject, OnDestroy } from '@angular/core';
+import { Component, DestroyRef, inject, OnDestroy, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ConfirmationService } from 'primeng/api';
+import { FormControl } from '@angular/forms';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { Table } from 'primeng/table';
 import { catchError, of } from 'rxjs';
@@ -8,6 +8,7 @@ import { Monthly } from '../models/monthly.model';
 import { ChristianToThaiYearPipe } from '../pipe/christian-to-thai-year.pipe';
 import { ThaiDatePipe } from '../pipe/thai-date.pipe';
 import { AuthService } from '../services/auth.service';
+import { ConfirmService } from '../services/confirm.service';
 import { MonthlyService } from '../services/monthly.service';
 import { SelectorService } from '../services/selector.service';
 import { ToastService } from '../services/toast.service';
@@ -20,7 +21,7 @@ import { CrudMonthlyComponent } from './crud-monthly/crud-monthly.component';
   imports: [SharedModule, ThaiDatePipe, ChristianToThaiYearPipe],
   template: `
     <div class="card">
-      @if (loading) {
+      @if (loading()) {
         <div class="loading-shade">
           <p-progressSpinner strokeWidth="4" ariaLabel="loading"/>
         </div>
@@ -54,7 +55,7 @@ import { CrudMonthlyComponent } from './crud-monthly/crud-monthly.component';
                 <span>
                   <p-button
                     (click)="showDialog(Monthly)"
-                    [disabled]="!admin"
+                    [disabled]="!admin()"
                     size="small"
                     icon="pi pi-plus"
                   />
@@ -64,9 +65,8 @@ import { CrudMonthlyComponent } from './crud-monthly/crud-monthly.component';
                     <i class="pi pi-search"></i>
                   </p-inputIcon>
                   <input
-                    class="sarabun"
                     pInputText
-                    [(ngModel)]="searchValue"
+                    [formControl]="searchValue"
                     pTooltip="หาเดือน"
                     tooltipPosition="bottom"
                     placeholder="ค้นหา .."
@@ -114,7 +114,7 @@ import { CrudMonthlyComponent } from './crud-monthly/crud-monthly.component';
                 <td>{{ month.datestart | thaiDate }}</td>
                 <td>{{ month.dateend | thaiDate }}</td>
                 <td>
-                  @if (admin) {
+                  @if (admin()) {
                     <i
                       pTooltip="แก้ไข"
                       (click)="showDialog(month)"
@@ -154,10 +154,10 @@ import { CrudMonthlyComponent } from './crud-monthly/crud-monthly.component';
   `,
 })
 export class MonthlyComponent implements OnDestroy {
-  searchValue: string = '';
+  searchValue = new FormControl();
   year: any[] = [];
-  loading: boolean = false;
-  admin!: boolean;
+  loading = signal(false);
+  admin = signal(false);
   monthly: any[] = [];
   dialogService = inject(DialogService);
   ref: DynamicDialogRef | undefined;
@@ -169,7 +169,7 @@ export class MonthlyComponent implements OnDestroy {
     private yearSearch: SelectorService,
     private monthlyService: MonthlyService,
     private messageService: ToastService,
-    private confirmService: ConfirmationService,
+    private confirmService: ConfirmService,
   ) {
     this.yearSearch.getYear().then((year) => {
       this.year = year;
@@ -179,7 +179,7 @@ export class MonthlyComponent implements OnDestroy {
   }
 
   getMonthly() {
-    this.loading = true;
+    this.loading.set(true);
     this.monthlyService
       .getSortedMonthlyData()
       .pipe(
@@ -191,14 +191,14 @@ export class MonthlyComponent implements OnDestroy {
         }),
       )
       .subscribe((result: any[]) => {
-        this.loading = false;
+        this.loading.set(false);
         this.monthly = result;
       });
   }
 
   getRole() {
     this.authService.isAdmin().subscribe((isAdmin) => {
-      this.admin = isAdmin;
+      this.admin.set(isAdmin);
     });
   }
 
@@ -225,7 +225,7 @@ export class MonthlyComponent implements OnDestroy {
 
   clear(table: Table) {
     table.clear();
-    this.searchValue = '';
+    this.searchValue.reset();
   }
 
   getValue(event: Event): string {
@@ -233,29 +233,15 @@ export class MonthlyComponent implements OnDestroy {
   }
 
   conf(event: Event, id: string) {
-    this.confirmService.confirm({
-      target: event.target as EventTarget,
-      message: 'ต้องการลบรายการนี้?',
-      icon: 'pi pi-info-circle',
-      acceptButtonStyleClass: 'p-button-warning p-button-sm',
-      accept: () => {
-        this.monthlyService.deleteMonth(id).subscribe({
-          next: () =>
-            this.messageService.showInfo('Info', 'ลบรายการแล้ว!'),
-          error: (error: any) =>
-            this.messageService.showError(
-              'Error',
-              `${error.message}`,
-            ),
-        });
+    this.confirmService.confirm(
+      event, id, this.monthlyService,
+      this.monthlyService.deleteMonth.bind(this.monthlyService),
+      () => {
       },
-      reject: () => {
-        this.messageService.showSuccess(
-          'Successfully',
-          'ยกเลิกการลบ.',
-        );
+      (error) => {
+        console.log(error);
       },
-    });
+    );
   }
 
   ngOnDestroy() {

@@ -1,6 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { ConfirmationService } from 'primeng/api';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { Monthly } from '../../models/monthly.model';
 import { MonthlyService } from '../../services/monthly.service';
@@ -14,7 +13,7 @@ import { SharedModule } from '../../shared/shared.module';
   imports: [SharedModule],
   template: `
     <hr class="h-px bg-gray-200 border-0"/>
-    <form [formGroup]="monthlyForm" (ngSubmit)="saveMonthly($event)">
+    <form [formGroup]="monthlyForm" (ngSubmit)="saveMonthly()">
       <input type="hidden"/>
       <div class="formgrid grid">
         <div class="field col my-3">
@@ -74,14 +73,14 @@ import { SharedModule } from '../../shared/shared.module';
             severity="secondary"
             styleClass="w-full"
             class="w-full mr-2"
-            (onClick)="close()"
+            (click)="close()"
           />
           <p-button
             label="Save"
             [disabled]="monthlyForm.invalid"
             styleClass="w-full"
             class="w-full"
-            (onClick)="saveMonthly($event)"
+            (click)="saveMonthly()"
           />
         </div>
       </div>
@@ -99,8 +98,8 @@ export class CrudMonthlyComponent implements OnInit, OnDestroy {
     id: new FormControl(null),
     month: new FormControl({
       label: 'มกราคม',
-      parent: undefined,
-    } as unknown as Monthly),
+      value: 'มกราคม',
+    }, Validators.required),
     year: new FormControl({
       label: new Date().getFullYear() + 543,
       parent: undefined,
@@ -111,17 +110,32 @@ export class CrudMonthlyComponent implements OnInit, OnDestroy {
 
   constructor(
     private ref: DynamicDialogRef,
-    private confirmService: ConfirmationService,
     private monthlyData: DynamicDialogConfig,
     private message: ToastService,
     private monthlyService: MonthlyService,
     private selectService: SelectorService,
   ) {
     if (this.monthlyData.data) {
+      /**
+       * 1. ค่า month ที่ส่งมาเป็น array {'label': 'ชื่อเดือน', 'value': 'ชื่อเดือน'}
+       *    ต้องเอาทั้ง label, value ซึ่งเป็นชื่อเดือนทั้งคู่
+       * 2. ปีที่ส่งมาเป็นปี ค.ศ.และเป็น array เหมือน month ต้องแปลงเป็นปี พ.ศ.เพื่อแสดงใน UI
+       * 3. datestart, dateend ต้องแปลงเป็น Date object
+       * 4. ต้องแปลงปี พ.ศ. เป็น ค.ศ. โดยการลบด้วย 543 ก่อนบันทึก
+       * 5. id ต้องส่งไปด้วยเพื่อใช้ในการแก้ไขข้อมูล
+       * 6. ถ้าไม่แปลงปี พ.ศ. เป็น ค.ศ. จะทำให้การบันทึกข้อมูลไม่ถูกต้อง
+       * 7. และเมื่อเรียกข้อมูลมาแก้ไข ก็จะผิดพลาดเพราะจะลบ 543 ในปี ค.ศ.อีก
+       * */
       this.monthlyForm.patchValue({
         id: this.monthlyData.data.id,
-        month: this.monthlyData.data.month.label,
-        year: this.monthlyData.data.year.label,
+        month: {
+          label: this.monthlyData.data.month,
+          value: this.monthlyData.data.month,
+        },
+        year: {
+          label: Number(this.monthlyData.data.year) + 543,
+          parent: this.monthlyData.data.year,
+        },
         datestart: this.monthlyData.data.datestart.toDate(),
         dateend: this.monthlyData.data.dateend.toDate(),
       });
@@ -137,7 +151,7 @@ export class CrudMonthlyComponent implements OnInit, OnDestroy {
   ngOnInit() {
   }
 
-  saveMonthly(event: Event) {
+  saveMonthly() {
     if (this.monthlyForm.invalid) return;
 
     const monthly = this.monthlyForm.value;
@@ -148,31 +162,17 @@ export class CrudMonthlyComponent implements OnInit, OnDestroy {
     };
 
     if (monthly.id) {
-      if (monthly.month == null) {
-        console.log('monthly.month null');
-        this.confirmService.confirm({
-          target: event.target as EventTarget,
-          message: 'ต้องเลือกเดือนอีกตรั้งก่อน!',
-          icon: 'pi pi-exclamation-circle',
-          acceptLabel: 'OK',
-          acceptButtonStyleClass: 'p-button-sm',
-          rejectVisible: false,
-          accept: () => {
-            return;
-          },
-        });
-      } else {
-        this.monthlyService.updateMonthly(dataToSave).subscribe({
-          next: () =>
-            this.message.showSuccess(
-              'Successfully',
-              'Updated monthly',
-            ),
-          error: (err) =>
-            this.message.showError('Error', err.message),
-          complete: () => this.close(),
-        });
-      }
+      this.monthlyService.updateMonthly(dataToSave).subscribe({
+        next: () =>
+          this.message.showSuccess(
+            'Successfully',
+            'Updated monthly',
+          ),
+        error: (err) =>
+          this.message.showError('Error', err.message),
+        complete: () => this.close(),
+      });
+
     } else {
       this.monthlyService.addMonthly(dataToSave).subscribe({
         next: () =>

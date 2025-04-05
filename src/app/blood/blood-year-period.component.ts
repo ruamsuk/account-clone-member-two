@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { Observable } from 'rxjs';
@@ -16,7 +16,7 @@ import { PrintDialogComponent } from './print-dialog.component';
   standalone: true,
   imports: [SharedModule, ThaiDatePipe],
   template: `
-    @if (loading) {
+    @if (loading()) {
       <div class="loading-shade">
         <p-progressSpinner strokeWidth="4" ariaLabel="loading"/>
       </div>
@@ -179,7 +179,7 @@ import { PrintDialogComponent } from './print-dialog.component';
                   </div>
                 </td>
                 <td class="no-print">
-                  @if (admin) {
+                  @if (admin()) {
                     <i
                       class="pi pi-pen-to-square mr-2 ml-2 text-blue-400"
                       (click)="showDialog(blood)"
@@ -207,8 +207,8 @@ export class BloodYearPeriodComponent implements OnInit, OnDestroy {
   bloodPressureRecords$: Observable<BloodPressure[]> | undefined;
   ref: DynamicDialogRef | undefined;
   years: any[] = [];
-  admin: boolean = false;
-  loading: boolean = false;
+  admin = signal(false);
+  loading = signal(false);
 
   startYear = new FormControl();
   endYear = new FormControl();
@@ -229,7 +229,7 @@ export class BloodYearPeriodComponent implements OnInit, OnDestroy {
       this.years.push({label: `${currentYear - i}`, value: currentYear - i});
     }
     this.authService.isAdmin().subscribe((isAdmin) => {
-      this.admin = isAdmin;
+      this.admin.set(isAdmin);
     });
   }
 
@@ -249,12 +249,12 @@ export class BloodYearPeriodComponent implements OnInit, OnDestroy {
 
   searchByYearRange() {
     if (this.yearStart && this.yearEnd) {
-      this.loading = true;
+      this.loading.set(true);
       this.bloodPressureRecords$ = this.bloodService.getBloodsByYearRange(
         this.yearStart,
         this.yearEnd,
       );
-      this.loading = false;
+      this.loading.set(false);
     }
   }
 
@@ -266,6 +266,7 @@ export class BloodYearPeriodComponent implements OnInit, OnDestroy {
       breakpoints: {
         maxWidth: '90vw',
       },
+      closable: true,
     });
   }
 
