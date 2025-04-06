@@ -44,6 +44,7 @@ import { SharedModule } from '../shared/shared.module';
               <p-table
                 [value]="summaryArray ?? []"
                 [rowHover]="true"
+                [scrollable]="true"
                 [columns]="cols"
                 [tableStyle]="{ 'min-width': '650px'}"
                 scrollHeight="400px"

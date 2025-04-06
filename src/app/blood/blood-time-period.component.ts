@@ -1,9 +1,10 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { Observable } from 'rxjs';
 import { BloodPressure } from '../models/blood-pressure.model';
 import { ThaiDatePipe } from '../pipe/thai-date.pipe';
+import { AuthService } from '../services/auth.service';
 import { BloodService } from '../services/blood.service';
 import { ToastService } from '../services/toast.service';
 import { SharedModule } from '../shared/shared.module';
@@ -14,7 +15,7 @@ import { PrintDialogComponent } from './print-dialog.component';
   standalone: true,
   imports: [SharedModule, ThaiDatePipe],
   template: `
-    @if (loading) {
+    @if (loading()) {
       <div class="loading-shade">
         <p-progressSpinner strokeWidth="4" ariaLabel="loading"/>
       </div>
@@ -118,7 +119,7 @@ import { PrintDialogComponent } from './print-dialog.component';
                   </th>
                 </tr>
               </ng-template>
-              <ng-template pTemplate="body" let-blood let-i="rowIndex">
+              <ng-template #body let-blood let-i="rowIndex">
                 <tr>
                   <td>
                     {{ blood.date | thaiDate }}
@@ -136,7 +137,7 @@ import { PrintDialogComponent } from './print-dialog.component';
                     {{ blood.evening.bp2 }}
                   </td>
                   <td class="no-print">
-                    @if (admin) {
+                    @if (admin()) {
                       <i
                         class="pi pi-pen-to-square mr-2 ml-2 text-blue-400"
                         (click)="showDialog(blood)"
@@ -163,10 +164,11 @@ export class BloodTimePeriodComponent implements OnDestroy, OnInit {
   ref: DynamicDialogRef | undefined;
   selectedDates = new FormControl();
   bloodPressureRecords$: Observable<BloodPressure[]> | undefined;
-  loading: boolean = false;
-  admin: boolean = false;
+  loading = signal(false);
+  admin = signal(false);
 
   constructor(
+    private authService: AuthService,
     private dialogService: DialogService,
     private bloodService: BloodService,
     private message: ToastService,
@@ -174,6 +176,9 @@ export class BloodTimePeriodComponent implements OnDestroy, OnInit {
   }
 
   ngOnInit() {
+    this.authService.isAdmin().subscribe(isAdmin => {
+      this.admin.set(isAdmin);
+    });
   }
 
   onSelect() {
@@ -198,12 +203,12 @@ export class BloodTimePeriodComponent implements OnDestroy, OnInit {
         return;
       }
 
-      this.loading = true;
+      this.loading.set(true);
       this.bloodPressureRecords$ = this.bloodService.getBloodsByDateRange(
         starter,
         ender,
       );
-      this.loading = false;
+      this.loading.set(false);
     } else {
       console.log('Please select a valid date range.');
     }

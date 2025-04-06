@@ -24,13 +24,13 @@ import { PrintDialogComponent } from './print-dialog.component';
     <div class="flex  flex-wrap p-fluid justify-center items-center">
       <p-card>
         <div
-          class="text-center font-thasadith text-base md:text-2xl -mt-3 mb-2"
+          class="text-center font-thasadith font-semibold text-base md:text-xl -mt-3 mb-2"
         >
-          <span class="text-slate-300 font-semibold">
+          <span class="text-indigo-400">
           Blood Pressure Year Period
           </span>
         </div>
-        <div class="card flex justify-center">
+        <div class="card flex justify-center mt-5">
           <form>
             <div class="flex grow">
               <p-floatLabel variant="on">
@@ -38,7 +38,6 @@ import { PrintDialogComponent } from './print-dialog.component';
                   [formControl]="startYear"
                   [options]="years"
                   (onNodeSelect)="onStartYearSelect($event)"
-                  placeholder="เลือกปีเริ่มต้น"
                   containerStyleClass="w-full"
                 />
                 <label for="treeSelect">เลือกปีเริ่มต้น</label>
@@ -49,7 +48,6 @@ import { PrintDialogComponent } from './print-dialog.component';
                     [formControl]="endYear"
                     [options]="years"
                     (onNodeSelect)="onEndYearSelect($event)"
-                    placeholder="เลือกปีสิ้นสุด"
                     containerStyleClass="w-full"
                   />
                   <label for="treeSelect">เลือกปีสิ้นสุด</label>

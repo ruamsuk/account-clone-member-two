@@ -65,7 +65,7 @@ import { AccountsComponent } from './accounts.component';
                  [rowHover]="true"
                  scrollHeight="400px"
                  [tableStyle]="{ 'min-width': '35vw' }"
-                 styleClass="p-datatable-striped"
+                 styleClass="fixed-header-footer-table"
         >
           <ng-template #caption>
             <div class="flex items-center justify-between">

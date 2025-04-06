@@ -216,6 +216,7 @@ import { AccountsComponent } from './accounts.component';
     }
   `,
   styles: ``
+
 })
 export class AccountBetweenComponent implements OnInit, OnDestroy {
   authService = inject(AuthService);

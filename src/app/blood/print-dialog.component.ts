@@ -18,8 +18,11 @@ interface Record {
   standalone: true,
   imports: [SharedModule],
   template: `
-    <div class="flex justify-content-center">
-      <h1 class="text-xl text-orange-400 tasadith">
+    <div class="">
+      <!--      <hr class="h-px bg-gray-300 border-0 w-full"/>-->
+    </div>
+    <div class="flex justify-center mb-5">
+      <h1 class="text-2xl text-orange-400 font-thasadith font-bold underline underline-offset-4">
         สร้างเอกสาร Word documents แล้ว โปรดบันทึกไฟล์
       </h1>
     </div>

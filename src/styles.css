@@ -211,3 +211,31 @@ i.pi {
   bottom: 10px;
   right: 25%;
 }
+
+th {
+  color: aquamarine;
+}
+
+.fixed-header-footer-table {
+  display: flex;
+  flex-direction: column;
+  height: auto; /* หรือกำหนดความสูงที่เหมาะสม */
+}
+
+.fixed-header-footer-table .p-datatable-wrapper {
+  overflow-y: auto;
+}
+
+.fixed-header-footer-table .p-datatable-thead > tr {
+  position: sticky;
+  top: 0;
+  z-index: 1; /* เพื่อให้ header อยู่เหนือ body */
+  background-color: inherit; /* ให้ใช้สีพื้นหลังของ thead */
+}
+
+.fixed-header-footer-table .p-datatable-tfoot > tr {
+  position: sticky;
+  bottom: 0;
+  z-index: 1; /* เพื่อให้ footer อยู่เหนือ body */
+  background-color: inherit; /* ให้ใช้สีพื้นหลังของ tfoot */
+}
