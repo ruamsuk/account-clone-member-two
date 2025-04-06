@@ -4,56 +4,85 @@ This project was generated using [Angular CLI](https://github.com/angular/angula
 
 ## Development server
 
-To start a local development server, run:
-
 ```bash
-ng serve
+    ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## Repo
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
+```aiignore
+https://github.com/ruamsuk/account-clone-member-two.git
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## วัตถุประสงค์
 
-```bash
-ng generate --help
+ต้องการปรับปรุงโค๊ดให้ดีและทันสมัยขึ้น ลดความซ้ำซ้อนของโค๊ด โดยความช่วยเหลือของ AI
+
+1. GitHub Copilot
+2. Gemini
+3. Qwen
+4. ChatGPT
+
+- บางครั้งเขาก็แนะนำโค๊ดเวอร์ชั่นเดิม เช่น ถ้าถามเกี่ยวกับ TailwindCSS ซึ่งปัจจุบัน (มี.ค.2568) เป็น
+  เวอร์ชั่น 4 แล้ว แต่เขามักจะแนะนำวิธีติดตั้งและตั้งค่าของเวอร์ชั่นเก่า <4
+- ประการสำคัญ เผลอลบโค๊ดในเครื่องเราไป ทำให้ต้นแบบหายหมด เลยต้องทำใหม่
+- ใน Monthly -> CrudMonthlyComponent
+  - มีการใช้ p-treeSelect
+  - มีวิธีกำหนดค่าให้กับ p-treeSelect ในค่าเริ่มต้นและการกำหนดค่าให้กับ p-treeSelect ด้วย
+  - monthlyForm.patchValue({})
+
+```typescript
+this.monthlyForm.patchValue({
+  id: this.monthlyData.data.id,
+  month: {
+    label: this.monthlyData.data.month,
+    value: this.monthlyData.data.month,
+  },
+  year: {
+    label: Number(this.monthlyData.data.year) + 543,
+    parent: this.monthlyData.data.year,
+  },
+  datestart: this.monthlyData.data.datestart.toDate(),
+  dateend: this.monthlyData.data.dateend.toDate(),
+});
 ```
 
-## Building
+- และบันทึกข้อมูล ใน Firestore
 
-To build the project run:
+```typescript
+saveMonthly()
+{
+  if (this.monthlyForm.invalid) return;
 
-```bash
-ng build
+  const monthly = this.monthlyForm.value;
+  const convertedYear = Number(monthly.year?.label) - 543;
+  const dataToSave = {
+    ...monthly,
+    year: convertedYear,
+  };
+
+  if (monthly.id) {
+    this.monthlyService.updateMonthly(dataToSave).subscribe({
+      next: () =>
+        this.message.showSuccess(
+          'Successfully',
+          'Updated monthly',
+        ),
+      error: (err) =>
+        this.message.showError('Error', err.message),
+      complete: () => this.close(),
+    });
+
+  } else {
+    this.monthlyService.addMonthly(dataToSave).subscribe({
+      next: () =>
+        this.message.showSuccess('Successfully', 'Saved monthly.'),
+      error: (err) => this.message.showError('Error', err.message),
+      complete: () => this.close(),
+    });
+  }
+}
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+- โค๊ดเก่าใน git ก็เป็นเวอร์ชั่นเก่า ต้องมาปรับปรุงใหม่ โดยเดิมใช้ PrimeFlex ซึ่งจะเลิกสนับสนุนแล้ว จึงเปลี่ยนไปใช้ TailwindCSS แทน
+- หวังว่าจะใช้งานได้ตรงตามที่ต้องการ
