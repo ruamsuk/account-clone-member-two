@@ -86,7 +86,7 @@ import { SharedModule } from '../shared/shared.module';
               class="w-full"
             />
           </div>
-          <div class="flex items-center justify-content-start my-3">
+          <div class="flex items-center justify-start my-3">
             <p-toggleswitch formControlName="isInCome"/>
             <span [ngClass]="{
             isIncome: accountForm.get('isInCome')?.value,
@@ -191,7 +191,7 @@ export class AccountsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.dialogRef) this.dialogRef.destroy();
+    if (this.dialogRef) this.dialogRef.close();
   }
 
   /**

@@ -21,6 +21,7 @@ import { InputSwitchModule } from 'primeng/inputswitch';
 import { InputTextModule } from 'primeng/inputtext';
 import { MenuModule } from 'primeng/menu';
 import { MenubarModule } from 'primeng/menubar';
+import { MessageModule } from 'primeng/message';
 import { PasswordModule } from 'primeng/password';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TableModule } from 'primeng/table';
@@ -64,7 +65,8 @@ import { TreeSelectModule } from 'primeng/treeselect';
     ProgressSpinnerModule,
     FloatLabelModule,
     GalleriaModule,
-    ToggleSwitchModule
+    ToggleSwitchModule,
+    MessageModule,
   ],
   exports: [
     AvatarModule,
@@ -98,7 +100,8 @@ import { TreeSelectModule } from 'primeng/treeselect';
     ProgressSpinnerModule,
     FloatLabelModule,
     GalleriaModule,
-    ToggleSwitchModule
+    ToggleSwitchModule,
+    MessageModule,
   ],
 })
 export class SharedModule {

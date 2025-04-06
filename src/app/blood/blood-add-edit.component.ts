@@ -1,17 +1,11 @@
-import {
-  Component,
-  OnDestroy,
-  OnInit,
-  Renderer2,
-  ViewChild,
-} from '@angular/core';
-import { SharedModule } from '../shared/shared.module';
+import { Component, inject, OnDestroy, OnInit, Renderer2, ViewChild, } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { TimeOptions } from '../models/blood-pressure.model';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { BloodService } from '../services/blood.service';
-import { MessagesService } from '../services/messages.service';
 import { InputMask } from 'primeng/inputmask';
+import { TimeOptions } from '../models/blood-pressure.model';
+import { BloodService } from '../services/blood.service';
+import { ToastService } from '../services/toast.service';
+import { SharedModule } from '../shared/shared.module';
 
 @Component({
   selector: 'app-blood-add-edit',
@@ -19,25 +13,24 @@ import { InputMask } from 'primeng/inputmask';
   imports: [SharedModule],
   template: `
     <form [formGroup]="bpForm" (ngSubmit)="onSubmit()">
-      <hr class="h-px bg-gray-200 border-0" />
-      <input type="hidden" name="hidden" />
-      <div class="card p-fluid flex flex-wrap gap-3">
+      <hr class="h-px bg-gray-200 border-0"/>
+      <input type="hidden" name="hidden"/>
+      <div class="card p-fluid flex flex-wrap gap-3 p-5">
         <div class="w-full">
-          <span class="sarabun block mb-2"> Date </span>
-          <p-calendar
+          <span class="block mb-2"> Date </span>
+          <p-datePicker
             [iconDisplay]="'input'"
             [showIcon]="true"
-            dateFormat="d M yy"
             appendTo="body"
             inputId="icondisplay"
             formControlName="date"
             name="date"
-            class="w-full"
+            styleClass="w-full"
             (onSelect)="onDateSelect()"
           />
         </div>
         <div class="w-full">
-          <span class="mb-2 block sarabun">Morning </span>
+          <span class="mb-2 block">Morning </span>
           <input
             pInputText
             type="text"
@@ -47,7 +40,7 @@ import { InputMask } from 'primeng/inputmask';
             class="w-full"
             hidden="hidden"
           />
-          <hr class="h-px bg-gray-200 border-0" />
+          <hr class="h-px bg-gray-200 border-0"/>
         </div>
         <div class="flex-grow-1" formGroupName="morning">
           <span class="mb-2 block sarabun">BP1 Morning </span>
@@ -56,7 +49,7 @@ import { InputMask } from 'primeng/inputmask';
             formControlName="bp1"
             mask="999/99 P99"
             placeholder="120/80 P60"
-            class="w-full"
+            styleClass="w-full"
             (onComplete)="moveFocus(bp2Morning)"
           ></p-inputMask>
         </div>
@@ -67,7 +60,7 @@ import { InputMask } from 'primeng/inputmask';
             formControlName="bp2"
             mask="999/99 P99"
             placeholder="120/80 P60"
-            class="w-full"
+            styleClass="w-full"
             (onComplete)="moveFocus(bp1Evening)"
           ></p-inputMask>
         </div>
@@ -82,7 +75,7 @@ import { InputMask } from 'primeng/inputmask';
             class="w-full"
             hidden="hidden"
           />
-          <hr class="h-px bg-gray-200 border-0" />
+          <hr class="h-px bg-gray-200 border-0"/>
         </div>
         <div class="w-full" formGroupName="evening">
           <span class="mb-2 block sarabun">BP1 Evening </span>
@@ -91,7 +84,7 @@ import { InputMask } from 'primeng/inputmask';
             formControlName="bp1"
             mask="999/99 P99"
             placeholder="120/80 P60"
-            class="w-full"
+            styleClass="w-full"
             (onComplete)="moveFocus(bp2Evening)"
           ></p-inputMask>
         </div>
@@ -102,27 +95,38 @@ import { InputMask } from 'primeng/inputmask';
             formControlName="bp2"
             mask="999/99 P99"
             placeholder="120/80 P60"
-            class="w-full"
+            styleClass="w-full"
           ></p-inputMask>
         </div>
       </div>
       <!--/ card flex-->
 
-      <div class="flex mt-5 mb-1">
-        <p-button
-          label="Cancel"
-          severity="secondary"
-          styleClass="w-full"
-          class="w-full mr-2"
-          (onClick)="close()"
-        />
-        <p-button
-          label="Save"
-          [disabled]="bpForm.invalid"
-          styleClass="w-full"
-          class="w-full"
-          (onClick)="onSubmit()"
-        />
+      <div class="flex mt-5 mb-1 gap-2">
+        <div class="grow">
+          <p-button
+            label="Cancel"
+            severity="secondary"
+            styleClass="w-full"
+            class="w-full mr-2"
+            (click)="close()"
+          />
+        </div>
+        <div class="grow">
+          <button [disabled]="bpForm.invalid"
+                  [ngClass]="{
+              'btn btn-disabled': bpForm.invalid,
+              'btn btn-info': bpForm.valid,
+              }" type="submit" class="w-full">
+            Save
+          </button>
+        </div>
+        <!--        <p-button-->
+        <!--          label="Save"-->
+        <!--          [disabled]="bpForm.invalid"-->
+        <!--          styleClass="w-full"-->
+        <!--          class="w-full"-->
+        <!--          (click)="onSubmit()"-->
+        <!--        />-->
       </div>
     </form>
   `,
@@ -134,15 +138,15 @@ export class BloodAddEditComponent implements OnInit, OnDestroy {
   @ViewChild('bp1Evening') bp1Evening: InputMask | undefined;
   @ViewChild('bp2Evening') bp2Evening: InputMask | undefined;
 
+  bloodService = inject(BloodService);
   bpForm!: FormGroup;
   timeOptions: TimeOptions[] | undefined;
 
   constructor(
-    private bloodService: BloodService,
     private fb: FormBuilder,
     private ref: DynamicDialogRef,
     private config: DynamicDialogConfig,
-    private message: MessagesService,
+    private message: ToastService,
     private renderer: Renderer2,
   ) {
     this.bpForm = this.fb.group({
@@ -177,8 +181,8 @@ export class BloodAddEditComponent implements OnInit, OnDestroy {
     }
 
     this.timeOptions = [
-      { name: 'เช้า', code: 'morning' },
-      { name: 'เย็น', code: 'evening' },
+      {name: 'เช้า', code: 'morning'},
+      {name: 'เย็น', code: 'evening'},
     ];
   }
 
@@ -209,12 +213,11 @@ export class BloodAddEditComponent implements OnInit, OnDestroy {
       const data = this.bpForm.value;
       this.bloodService.updateBlood(data.id, data).subscribe({
         error: (error) => {
-          this.message.addMessage('error', 'Error', error.message);
+          this.message.showError('Error', error.message);
           console.log(JSON.stringify(error, null, 2));
         },
         complete: () => {
-          this.message.addMessage(
-            'success',
+          this.message.showSuccess(
             'Successfully',
             'Update Blood pressure successfully',
           );
@@ -225,14 +228,13 @@ export class BloodAddEditComponent implements OnInit, OnDestroy {
       // new record
       this.bloodService.createBlood(this.bpForm.value).subscribe({
         next: () => {
-          this.message.addMessage(
-            'success',
+          this.message.showSuccess(
             'Successfully',
             'Create Blood pressure successfully',
           );
         },
         error: (error) => {
-          this.message.addMessage('error', 'Error', error.message);
+          this.message.showError('Error', error.message);
         },
         complete: () => this.close(),
       });

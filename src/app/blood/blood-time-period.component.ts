@@ -1,11 +1,12 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { Observable } from 'rxjs';
 import { BloodPressure } from '../models/blood-pressure.model';
 import { ThaiDatePipe } from '../pipe/thai-date.pipe';
+import { AuthService } from '../services/auth.service';
 import { BloodService } from '../services/blood.service';
-import { MessagesService } from '../services/messages.service';
+import { ToastService } from '../services/toast.service';
 import { SharedModule } from '../shared/shared.module';
 import { PrintDialogComponent } from './print-dialog.component';
 
@@ -14,39 +15,34 @@ import { PrintDialogComponent } from './print-dialog.component';
   standalone: true,
   imports: [SharedModule, ThaiDatePipe],
   template: `
-    <div class="flex justify-content-center align-items-center h-15rem -mt-4">
-      @if (loading) {
-        <div class="loading-shade">
-          <p-progressSpinner strokeWidth="4" ariaLabel="loading"/>
-        </div>
-      }
-      <p-card [style]="{ 'min-width': '30vw' }">
-        <p
-          class="hidden flex justify-content-center text-gray-200 tasadith text-2xl -mt-4 xs:text-sm"
+    @if (loading()) {
+      <div class="loading-shade">
+        <p-progressSpinner strokeWidth="4" ariaLabel="loading"/>
+      </div>
+    }
+    <div class="flex flex-wrap p-fluid justify-center items-center mt-2 m-5">
+      <p-card>
+        <div
+          class="text-center text-gray-200 font-thasadith text-base md:text-2xl -mt-3 mb-2"
         >
           Blood Pressure Time Period
-        </p>
+        </div>
         <form>
-          <div class="flex">
-            <div class="flex align-items-center justify-content-center w-full">
-              <p-calendar
+          <div class="flex-auto">
+            <p-floatlabel variant="on">
+              <p-datePicker
                 [formControl]="selectedDates"
                 [iconDisplay]="'input'"
                 [showIcon]="true"
-                selectionMode="range"
-                inputId="icondisplay"
-                name="date"
-                appendTo="body"
-                dateFormat="d M yy"
-                (onSelect)="onSelect()"
-                [readonlyInput]="true"
-              ></p-calendar>
-            </div>
+                [readonlyInput]="true" (onSelect)="onSelect()"
+                selectionMode="range" styleClass="w-[250px]"/>
+              <label for="on_label">วันเริ่มต้น - วันสิ้นสุด</label>
+            </p-floatlabel>
           </div>
         </form>
       </p-card>
     </div>
-    <div class="table-container justify-content-center -mt-3">
+    <div class="table-container justify-center">
       <div class="card">
         @if (bloodPressureRecords$ | async; as bloods) {
           <div id="contentToConvert">
@@ -59,11 +55,11 @@ import { PrintDialogComponent } from './print-dialog.component';
               [breakpoint]="'960px'"
               [tableStyle]="{ 'min-width': '50rem' }"
               responsiveLayout="stack"
-              styleClass="p-datatable-gridlines"
+              showGridlines
             >
-              <ng-template pTemplate="caption">
-                <div class="flex justify-content-between align-items-center">
-                  <span class="tasadith text-orange-300 text-xl">
+              <ng-template #caption>
+                <div class="flex justify-between items-center">
+                  <span class="font-thasadith text-orange-300 text-xl font-semibold">
                     Blood Pressure Time Period
                   </span>
                   <span>
@@ -74,46 +70,58 @@ import { PrintDialogComponent } from './print-dialog.component';
                   </span>
                 </div>
               </ng-template>
-              <ng-template pTemplate="header">
+              <ng-template #header>
                 <tr>
-                  <th rowspan="3" style="width: 20%">Date.</th>
+                  <th rowspan="3" style="width: 20%">
+                    <div class="ml-5">Date.</div>
+                  </th>
                 </tr>
                 <tr>
                   <th
                     colspan="2"
                     style="width: 20%"
-                    class="text-center text-green-400"
                   >
-                    Morning<br/><span class="text-gray-600"
-                  >(Before medicine)</span
-                  >
+                    <div class="text-center text-green-400">
+                      Morning
+                      <p class="text-center text-gray-600">
+                        (Before medicine)
+                      </p>
+                    </div>
                   </th>
                   <th
                     colspan="2"
                     style="width: 20%"
-                    class="text-center text-yellow-400"
                   >
-                    Evening<br/><span class="text-gray-600"
-                  >(After medicine )</span
-                  >
+                    <div class="text-center text-yellow-400">
+                      Evening
+                      <p class="text-center text-gray-600">
+                        (After medicine )
+                      </p>
+                    </div>
                   </th>
                   <th></th>
                 </tr>
                 <tr>
-                  <th style="width: 15%" class="text-green-400">BP1</th>
-                  <th style="width: 15%" class="text-green-400">BP2</th>
-                  <th style="width: 15%" class="text-yellow-400">BP1</th>
-                  <th style="width: 15%" class="text-yellow-400">BP2</th>
-                  <th style="width: 15%" class="text-teal-400">Action</th>
+                  <th style="width: 15%">
+                    <div class="text-green-400">BP1</div>
+                  </th>
+                  <th style="width: 15%">
+                    <div class="text-green-400">BP2</div>
+                  </th>
+                  <th style="width: 15%">
+                    <div class="text-yellow-400">BP1</div>
+                  </th>
+                  <th style="width: 15%">
+                    <div class="text-yellow-400">BP2</div>
+                  </th>
+                  <th style="width: 15%">
+                    <div class="text-teal-400">Action</div>
+                  </th>
                 </tr>
               </ng-template>
-              <ng-template pTemplate="body" let-blood let-i="rowIndex">
+              <ng-template #body let-blood let-i="rowIndex">
                 <tr>
-                  <!--<td>
-                    {{ currentPage * rowsPerPage + i + 1 }}
-                  </td>-->
                   <td>
-                    <span class="p-column-title">Date</span>
                     {{ blood.date | thaiDate }}
                   </td>
                   <td>
@@ -129,7 +137,7 @@ import { PrintDialogComponent } from './print-dialog.component';
                     {{ blood.evening.bp2 }}
                   </td>
                   <td class="no-print">
-                    @if (admin) {
+                    @if (admin()) {
                       <i
                         class="pi pi-pen-to-square mr-2 ml-2 text-blue-400"
                         (click)="showDialog(blood)"
@@ -150,39 +158,27 @@ import { PrintDialogComponent } from './print-dialog.component';
     </div>
   `,
   styles: `
-    .p-card-center {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100%;
-    }
-
-    .p-calendar-center {
-      width: 100%; /* สามารถปรับให้พอดีกับความต้องการได้ */
-      text-align: center;
-    }
-
-    td {
-      font-family: 'Sarabun', sans-serif !important;
-      color: #a3a1a1;
-    }
   `,
 })
 export class BloodTimePeriodComponent implements OnDestroy, OnInit {
   ref: DynamicDialogRef | undefined;
   selectedDates = new FormControl();
   bloodPressureRecords$: Observable<BloodPressure[]> | undefined;
-  loading: boolean = false;
-  admin: boolean = false;
+  loading = signal(false);
+  admin = signal(false);
 
   constructor(
+    private authService: AuthService,
     private dialogService: DialogService,
     private bloodService: BloodService,
-    private message: MessagesService,
+    private message: ToastService,
   ) {
   }
 
   ngOnInit() {
+    this.authService.isAdmin().subscribe(isAdmin => {
+      this.admin.set(isAdmin);
+    });
   }
 
   onSelect() {
@@ -200,20 +196,19 @@ export class BloodTimePeriodComponent implements OnDestroy, OnInit {
 
       /** avoid same date or end less than begin */
       if (starter >= ender) {
-        this.message.addMessage(
-          'error',
+        this.message.showError(
           'Error',
           'วันเริ่มต้นกับวันสิ้นสุดต้องคนละวันกัน',
         );
         return;
       }
 
-      this.loading = true;
+      this.loading.set(true);
       this.bloodPressureRecords$ = this.bloodService.getBloodsByDateRange(
         starter,
         ender,
       );
-      this.loading = false;
+      this.loading.set(false);
     } else {
       console.log('Please select a valid date range.');
     }

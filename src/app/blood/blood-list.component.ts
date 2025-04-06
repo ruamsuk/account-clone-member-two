@@ -1,7 +1,6 @@
 import { Component, DestroyRef, OnDestroy, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl } from '@angular/forms';
-import { ConfirmationService } from 'primeng/api';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { Table } from 'primeng/table';
 import { catchError, Observable, of } from 'rxjs';
@@ -9,7 +8,8 @@ import { BloodPressure } from '../models/blood-pressure.model';
 import { ThaiDatePipe } from '../pipe/thai-date.pipe';
 import { AuthService } from '../services/auth.service';
 import { BloodService } from '../services/blood.service';
-import { MessagesService } from '../services/messages.service';
+import { ConfirmService } from '../services/confirm.service';
+import { ToastService } from '../services/toast.service';
 import { SharedModule } from '../shared/shared.module';
 import { BloodAddEditComponent } from './blood-add-edit.component';
 
@@ -18,7 +18,7 @@ import { BloodAddEditComponent } from './blood-add-edit.component';
   standalone: true,
   imports: [SharedModule, ThaiDatePipe],
   template: `
-    <div class="table-container align-items-center justify-content-center mt-3">
+    <div class="table-container items-center justify-center mt-3">
       @if (loading) {
         <div class="loading-shade">
           <p-progressSpinner strokeWidth="4" ariaLabel="loading"/>
@@ -36,10 +36,10 @@ import { BloodAddEditComponent } from './blood-add-edit.component';
             [breakpoint]="'960px'"
             [tableStyle]="{ 'min-width': '50rem' }"
             responsiveLayout="stack"
-            styleClass="p-datatable-gridlines"
+            showGridlines
           >
-            <ng-template pTemplate="caption">
-              <div class="flex align-items-center justify-content-between">
+            <ng-template #caption>
+              <div class="flex items-center justify-between">
                 <span>
                   <p-button
                     (click)="showDialog('')"
@@ -49,7 +49,7 @@ import { BloodAddEditComponent } from './blood-add-edit.component';
                   />
                 </span>
                 <span
-                  class="hidden md:block tasadith text-green-400 text-3xl ml-auto"
+                  class="hidden md:block font-thasadith font-semibold text-green-400 text-3xl ml-auto"
                 >
                   Bloods Pressure List
                 </span>
@@ -75,7 +75,7 @@ import { BloodAddEditComponent } from './blood-add-edit.component';
                 </p-iconField>
               </div>
             </ng-template>
-            <ng-template pTemplate="header">
+            <ng-template #header>
               <tr>
                 <th rowspan="3" style="width: 20%">Date.</th>
               </tr>
@@ -83,38 +83,48 @@ import { BloodAddEditComponent } from './blood-add-edit.component';
                 <th
                   colspan="2"
                   style="width: 20%"
-                  class="text-center text-green-400"
                 >
-                  Morning<br/><span class="text-gray-600"
-                >(Before medicine)</span
-                >
+                  <div class="text-center text-green-400">
+                    Morning
+                    <p class="text-center text-gray-600">
+                      (Before medicine)
+                    </p>
+                  </div>
                 </th>
                 <th
                   colspan="2"
                   style="width: 20%"
-                  class="text-center text-yellow-400"
                 >
-                  Evening<br/><span class="text-gray-600"
-                >(After medicine )</span
-                >
+                  <div class="text-center text-yellow-400">
+                    Evening
+                    <p class="text-center text-gray-600">
+                      (After medicine )
+                    </p>
+                  </div>
                 </th>
                 <th></th>
               </tr>
               <tr>
-                <th style="width: 15%" class="text-green-400">BP1</th>
-                <th style="width: 15%" class="text-green-400">BP2</th>
-                <th style="width: 15%" class="text-yellow-400">BP1</th>
-                <th style="width: 15%" class="text-yellow-400">BP2</th>
-                <th style="width: 15%" class="text-teal-400">Action</th>
+                <th style="width: 15%">
+                  <div class="text-green-400">BP1</div>
+                </th>
+                <th style="width: 15%">
+                  <div class="text-green-400">BP2</div>
+                </th>
+                <th style="width: 15%">
+                  <div class="text-yellow-400">BP1</div>
+                </th>
+                <th style="width: 15%">
+                  <div class="text-yellow-400">BP2</div>
+                </th>
+                <th style="width: 15%">
+                  <div class="text-teal-400">Action</div>
+                </th>
               </tr>
             </ng-template>
-            <ng-template pTemplate="body" let-blood let-i="rowIndex">
+            <ng-template #body let-blood let-i="rowIndex">
               <tr>
-                <!--<td>
-                  {{ currentPage * rowsPerPage + i + 1 }}
-                </td>-->
                 <td>
-                  <span class="p-column-title">Date</span>
                   {{ blood.date | thaiDate }}
                 </td>
                 <td>
@@ -165,7 +175,7 @@ import { BloodAddEditComponent } from './blood-add-edit.component';
                     ></i>
                     <p-confirmPopup/>
                     <i
-                      class="pi pi-trash mr-2 ml-2 text-orange-600"
+                      class="pi pi-trash mr-2 ml-2 text-orange-500"
                       (click)="confirm($event, blood.id)"
                     ></i>
                   } @else {
@@ -180,13 +190,6 @@ import { BloodAddEditComponent } from './blood-add-edit.component';
     </div>
   `,
   styles: `
-    .high-bp {
-      color: red;
-    }
-
-    .normal-bp {
-      color: inherit; /* หรือสีอื่นที่ต้องการ */
-    }
   `,
 })
 export class BloodListComponent implements OnInit, OnDestroy {
@@ -196,23 +199,20 @@ export class BloodListComponent implements OnInit, OnDestroy {
   searchControl: FormControl;
 
   admin: boolean = false;
-  // สำหรับสร้างเลขลำดับรายการในตาราง
-  // currentPage = 0;
-  // rowsPerPage = 10;
 
   constructor(
     private authService: AuthService,
-    private confService: ConfirmationService,
     private dialogService: DialogService,
     private bloodService: BloodService,
-    private messageService: MessagesService,
+    private messageService: ToastService,
     private destroyRef: DestroyRef,
+    private confirmService: ConfirmService
   ) {
     this.searchControl = new FormControl();
   }
 
   ngOnInit() {
-    this.authService.isAdmin().then((isAdmin) => {
+    this.authService.isAdmin().subscribe((isAdmin) => {
       this.admin = isAdmin;
     });
     this.getBloodList();
@@ -224,7 +224,7 @@ export class BloodListComponent implements OnInit, OnDestroy {
     this.bloods$ = this.bloodService.getBloods().pipe(
       takeUntilDestroyed(this.destroyRef),
       catchError((error: Error) => {
-        this.messageService.addMessage('error', 'Error', error.message);
+        this.messageService.showError('Error', error.message);
         return of([]);
       }),
     );
@@ -252,50 +252,34 @@ export class BloodListComponent implements OnInit, OnDestroy {
       data: blood,
       header: header,
       width: '360px',
+      contentStyle: {overflow: 'auto'},
       breakpoints: {
         '960px': '360px',
         '640px': '360px',
         '390px': '360px',
       },
+      closable: true,
     });
   }
 
   clear(table: Table) {
     table.clear();
-    this.searchControl.setValue('');
+    this.searchControl.reset();
   }
 
   ngOnDestroy() {
     if (this.ref) this.ref.close();
   }
 
-  confirm(event: Event, morning: any) {
-    this.confService.confirm({
-      target: event.target as EventTarget,
-      message: 'ต้องการลบรายการนี้ แน่ใจ?',
-      header: 'Confirmation',
-      icon: 'pi pi-info-circle',
-      acceptButtonStyleClass: 'p-button-warning p-button-sm',
-      rejectButtonStyleClass: 'p-button-text',
-      accept: () => {
-        this.bloodService.deleteBlood(morning).subscribe({
-          next: () => {
-            this.messageService.addMessage(
-              'success',
-              'Successfully',
-              'ลบข้อมูลเรียบร้อยแล้ว',
-            );
-          },
-          error: (error: any) => {
-            this.messageService.addMessage('error', 'Error', error.message);
-          },
-          complete: () => {
-          },
-        });
+  confirm(event: Event, id: string) {
+    this.confirmService.confirm(
+      event, id, this.bloodService,
+      this.bloodService.deleteBlood.bind(this.bloodService),
+      () => {
       },
-      reject: () => {
-        this.messageService.addMessage('info', 'Warning', 'ยกเลิกการลบแล้ว!');
+      (error) => {
+        console.log(error);
       },
-    });
+    );
   }
 }

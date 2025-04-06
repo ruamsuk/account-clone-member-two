@@ -65,66 +65,66 @@ export const routes: Routes = [
       },
     ],
   },
-  // {
-  //   path: 'credit',
-  //   ...canActivate(redirectUnauthorizedToLogin),
-  //   children: [
-  //     {
-  //       path: 'credit-list',
-  //       loadComponent: () =>
-  //         import('./credit/credit-list.component').then(
-  //           (m) => m.CreditListComponent,
-  //         ),
-  //     },
-  //     {
-  //       path: 'between',
-  //       loadComponent: () =>
-  //         import('./credit/credit-between.component').then(
-  //           (m) => m.CreditBetweenComponent,
-  //         ),
-  //     },
-  //     {
-  //       path: 'allyear',
-  //       loadComponent: () =>
-  //         import('./credit/credit-year.component').then(
-  //           (m) => m.CreditYearComponent,
-  //         ),
-  //     },
-  //   ],
-  // },
-  // {
-  //   path: 'bloods',
-  //   ...canActivate(redirectUnauthorizedToLogin),
-  //   children: [
-  //     {
-  //       path: 'blood-list',
-  //       loadComponent: () =>
-  //         import('./blood/blood-list.component').then(
-  //           (m) => m.BloodListComponent,
-  //         ),
-  //     },
-  //     {
-  //       path: 'blood-time-period',
-  //       loadComponent: () =>
-  //         import('./blood/blood-time-period.component').then(
-  //           (m) => m.BloodTimePeriodComponent,
-  //         ),
-  //     },
-  //     {
-  //       path: 'blood-year-period',
-  //       loadComponent: () =>
-  //         import('./blood/blood-year-period.component').then(
-  //           (m) => m.BloodYearPeriodComponent,
-  //         ),
-  //     },
-  //   ],
-  // },
-  // {
-  //   path: 'monthly',
-  //   ...canActivate(redirectUnauthorizedToLogin),
-  //   loadComponent: () =>
-  //     import('./monthly/monthly.component').then((m) => m.MonthlyComponent),
-  // },
+  {
+    path: 'credit',
+    ...canActivate(redirectUnauthorizedToLogin),
+    children: [
+      {
+        path: 'credit-list',
+        loadComponent: () =>
+          import('./credit/credit-list.component').then(
+            (m) => m.CreditListComponent,
+          ),
+      },
+      {
+        path: 'between',
+        loadComponent: () =>
+          import('./credit/credit-between.component').then(
+            (m) => m.CreditBetweenComponent,
+          ),
+      },
+      {
+        path: 'allyear',
+        loadComponent: () =>
+          import('./credit/credit-year.component').then(
+            (m) => m.CreditYearComponent,
+          ),
+      },
+    ],
+  },
+  {
+    path: 'bloods',
+    ...canActivate(redirectUnauthorizedToLogin),
+    children: [
+      {
+        path: 'blood-list',
+        loadComponent: () =>
+          import('./blood/blood-list.component').then(
+            (m) => m.BloodListComponent,
+          ),
+      },
+      {
+        path: 'blood-time-period',
+        loadComponent: () =>
+          import('./blood/blood-time-period.component').then(
+            (m) => m.BloodTimePeriodComponent,
+          ),
+      },
+      {
+        path: 'blood-year-period',
+        loadComponent: () =>
+          import('./blood/blood-year-period.component').then(
+            (m) => m.BloodYearPeriodComponent,
+          ),
+      },
+    ],
+  },
+  {
+    path: 'monthly',
+    ...canActivate(redirectUnauthorizedToLogin),
+    loadComponent: () =>
+      import('./monthly/monthly.component').then((m) => m.MonthlyComponent),
+  },
   {
     path: 'manage-user',
     ...canActivate(redirectUnauthorizedToLogin),

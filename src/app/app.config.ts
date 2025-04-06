@@ -69,7 +69,7 @@ export const appConfig: ApplicationConfig = {
       decimal: '.',
       precision: 2,
       prefix: '฿ ',
-      suffix: '',
+      suffix: ' บาท',
       thousands: ',',
       nullable: true,
       min: null,

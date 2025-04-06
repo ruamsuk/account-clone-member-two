@@ -80,16 +80,13 @@ html {
   @apply overflow-x-auto overflow-y-hidden w-[650px] mx-auto max-w-full md:w-[800px] md:mx-auto
 }
 
+.table-container-credit {
+  @apply overflow-x-auto overflow-y-hidden w-[400px] mx-auto max-w-full
+
+}
+
 .loading-shade {
   @apply fixed inset-0 bg-black/50 z-[9999999] flex items-center justify-center;
-}
-
-th {
-  @apply text-teal-400 text-sm md:text-lg   bg-gray-900/70
-}
-
-td {
-  @apply text-sm md:text-[1rem] text-gray-300;
 }
 
 i {
@@ -114,6 +111,10 @@ label {
 
 .myCenter {
   @apply flex justify-center items-center;
+}
+
+.mySummary {
+  @apply flex items-center justify-around bg-gray-900 font-thasadith font-bold text-base md:text-xl mb-10 leading-12;
 }
 
 .table {
@@ -141,6 +142,8 @@ label {
   vertical-align: top;
   padding-right: 5px;
   height: 2rem;
+  position: sticky !important;
+  z-index: 100;
   width: 36%;
   font-size: 1rem !important;
   font-weight: 500 !important;
@@ -153,4 +156,86 @@ label {
   font-family: 'Thasadith', sans-serif;
   padding-left: 0.5rem;
   color: #67f76e;
+}
+
+/** calendar */
+.p-datepicker-weekday {
+  color: lightskyblue !important;
+}
+
+.negative-balance {
+  color: red;
+}
+
+.positive-balance {
+  color: #90ee90; /* สีเขียวเลม่อน */
+}
+
+i.pi {
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.icons {
+  position: relative;
+  right: 30px;
+}
+
+.high-bp {
+  color: red;
+}
+
+.normal-bp {
+  color: inherit; /* หรือสีอื่นที่ต้องการ */
+}
+
+.profile-image > img {
+  border-radius: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.profile-image {
+  position: relative;
+}
+
+.profile-image > #in {
+  position: absolute;
+  bottom: 10px;
+  left: 80%;
+}
+
+.profile-image > button {
+  position: absolute;
+  bottom: 10px;
+  right: 25%;
+}
+
+th {
+  color: aquamarine;
+}
+
+.fixed-header-footer-table {
+  display: flex;
+  flex-direction: column;
+  height: auto; /* หรือกำหนดความสูงที่เหมาะสม */
+}
+
+.fixed-header-footer-table .p-datatable-wrapper {
+  overflow-y: auto;
+}
+
+.fixed-header-footer-table .p-datatable-thead > tr {
+  position: sticky;
+  top: 0;
+  z-index: 1; /* เพื่อให้ header อยู่เหนือ body */
+  background-color: inherit; /* ให้ใช้สีพื้นหลังของ thead */
+}
+
+.fixed-header-footer-table .p-datatable-tfoot > tr {
+  position: sticky;
+  bottom: 0;
+  z-index: 1; /* เพื่อให้ footer อยู่เหนือ body */
+  background-color: inherit; /* ให้ใช้สีพื้นหลังของ tfoot */
 }

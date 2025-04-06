@@ -1,13 +1,12 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ConfirmationService } from 'primeng/api';
+import { Component, OnDestroy, OnInit, signal } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { Observable } from 'rxjs';
 import { BloodPressure } from '../models/blood-pressure.model';
 import { ThaiDatePipe } from '../pipe/thai-date.pipe';
 import { AuthService } from '../services/auth.service';
 import { BloodService } from '../services/blood.service';
-import { MessagesService } from '../services/messages.service';
+import { ConfirmService } from '../services/confirm.service';
 import { SharedModule } from '../shared/shared.module';
 import { BloodAddEditComponent } from './blood-add-edit.component';
 import { PrintDialogComponent } from './print-dialog.component';
@@ -15,50 +14,51 @@ import { PrintDialogComponent } from './print-dialog.component';
 @Component({
   selector: 'app-blood-year-period',
   standalone: true,
-  imports: [SharedModule, FormsModule, ReactiveFormsModule, ThaiDatePipe],
+  imports: [SharedModule, ThaiDatePipe],
   template: `
-    <div class="flex justify-content-center align-items-center h-15rem -mt-4">
-      @if (loading) {
-        <div class="loading-shade">
-          <p-progressSpinner strokeWidth="4" ariaLabel="loading"/>
-        </div>
-      }
-      <p-card [style]="{ 'min-width': '30vw' }">
-        <p
-          class="hidden flex justify-content-center text-gray-200 tasadith text-2xl -mt-4 xs:text-sm"
+    @if (loading()) {
+      <div class="loading-shade">
+        <p-progressSpinner strokeWidth="4" ariaLabel="loading"/>
+      </div>
+    }
+    <div class="flex  flex-wrap p-fluid justify-center items-center">
+      <p-card>
+        <div
+          class="text-center font-thasadith font-semibold text-base md:text-xl -mt-3 mb-2"
         >
+          <span class="text-indigo-400">
           Blood Pressure Year Period
-        </p>
-        <form>
-          <div class="flex">
-            <div class="flex align-items-center justify-content-center w-full">
-              <p-floatLabel class="md:w-20rem w-full">
+          </span>
+        </div>
+        <div class="card flex justify-center mt-5">
+          <form>
+            <div class="flex grow">
+              <p-floatLabel variant="on">
                 <p-treeSelect
-                  containerStyleClass="w-full"
                   [formControl]="startYear"
                   [options]="years"
                   (onNodeSelect)="onStartYearSelect($event)"
-                  placeholder="เลือกปีเริ่มต้น"
+                  containerStyleClass="w-full"
                 />
                 <label for="treeSelect">เลือกปีเริ่มต้น</label>
               </p-floatLabel>
-
-              <p-floatLabel class="md:w-20rem w-full">
-                <p-treeSelect
-                  containerStyleClass="w-full"
-                  [formControl]="endYear"
-                  [options]="years"
-                  (onNodeSelect)="onEndYearSelect($event)"
-                  placeholder="เลือกปีสิ้นสุด"
-                />
-                <label for="treeSelect">เลือกปีสิ้นสุด</label>
-              </p-floatLabel>
+              <div class="flex grow ml-2">
+                <p-floatLabel variant="on">
+                  <p-treeSelect
+                    [formControl]="endYear"
+                    [options]="years"
+                    (onNodeSelect)="onEndYearSelect($event)"
+                    containerStyleClass="w-full"
+                  />
+                  <label for="treeSelect">เลือกปีสิ้นสุด</label>
+                </p-floatLabel>
+              </div>
             </div>
-          </div>
-        </form>
+          </form>
+        </div>
       </p-card>
     </div>
-    <div class="table-container justify-content-center -mt-3">
+    <div class="table-container justify-center mt-2">
       <div class="card">
         @if (bloodPressureRecords$ | async; as bloods) {
           <p-table
@@ -70,11 +70,11 @@ import { PrintDialogComponent } from './print-dialog.component';
             [breakpoint]="'960px'"
             [tableStyle]="{ 'min-width': '50rem' }"
             responsiveLayout="stack"
-            styleClass="p-datatable-gridlines"
+            showGridlines
           >
-            <ng-template pTemplate="caption">
-              <div class="flex justify-content-between align-items-center">
-                <span class="tasadith text-orange-300 text-xl">
+            <ng-template #caption>
+              <div class="flex justify-between items-center">
+                <span class="font-thasadith font-semibold text-orange-300 text-xl">
                   Blood Pressure Year Period
                 </span>
                 <span>
@@ -82,46 +82,58 @@ import { PrintDialogComponent } from './print-dialog.component';
                 </span>
               </div>
             </ng-template>
-            <ng-template pTemplate="header">
+            <ng-template #header>
               <tr>
-                <th rowspan="3" style="width: 20%">Date.</th>
+                <th rowspan="3" style="width: 20%">
+                  <div class="ml-5">Date.</div>
+                </th>
               </tr>
               <tr>
                 <th
                   colspan="2"
                   style="width: 20%"
-                  class="text-center text-green-400"
                 >
-                  Morning<br/><span class="text-gray-600"
-                >(Before medicine)</span
-                >
+                  <div class="text-center text-green-400">
+                    Morning
+                    <p class="text-center text-gray-600">
+                      (Before medicine)
+                    </p>
+                  </div>
                 </th>
                 <th
                   colspan="2"
                   style="width: 20%"
-                  class="text-center text-yellow-400"
                 >
-                  Evening<br/><span class="text-gray-600"
-                >(After medicine )</span
-                >
+                  <div class="text-center text-yellow-400">
+                    Evening
+                    <p class="text-center text-gray-600">
+                      (After medicine )
+                    </p>
+                  </div>
                 </th>
                 <th></th>
               </tr>
               <tr>
-                <th style="width: 15%" class="text-green-400">BP1</th>
-                <th style="width: 15%" class="text-green-400">BP2</th>
-                <th style="width: 15%" class="text-yellow-400">BP1</th>
-                <th style="width: 15%" class="text-yellow-400">BP2</th>
-                <th style="width: 15%" class="text-teal-400">Action</th>
+                <th style="width: 15%">
+                  <div class="text-green-400">BP1</div>
+                </th>
+                <th style="width: 15%">
+                  <div class="text-green-400">BP2</div>
+                </th>
+                <th style="width: 15%">
+                  <div class="text-yellow-400">BP1</div>
+                </th>
+                <th style="width: 15%">
+                  <div class="text-yellow-400">BP2</div>
+                </th>
+                <th style="width: 15%">
+                  <div class="text-teal-400">Action</div>
+                </th>
               </tr>
             </ng-template>
-            <ng-template pTemplate="body" let-blood let-i="rowIndex">
+            <ng-template #body let-blood let-i="rowIndex">
               <tr>
-                <!--<td>
-                  {{ currentPage * rowsPerPage + i + 1 }}
-                </td>-->
                 <td>
-                  <span class="p-column-title">Date</span>
                   {{ blood.date | thaiDate }}
                 </td>
                 <td>
@@ -165,7 +177,7 @@ import { PrintDialogComponent } from './print-dialog.component';
                   </div>
                 </td>
                 <td class="no-print">
-                  @if (admin) {
+                  @if (admin()) {
                     <i
                       class="pi pi-pen-to-square mr-2 ml-2 text-blue-400"
                       (click)="showDialog(blood)"
@@ -187,26 +199,14 @@ import { PrintDialogComponent } from './print-dialog.component';
     </div>
   `,
   styles: `
-    td {
-      font-family: 'Sarabun', sans-serif !important;
-      color: #a3a1a1;
-    }
-
-    .high-bp {
-      color: red;
-    }
-
-    .normal-bp {
-      color: inherit; /* หรือสีอื่นที่ต้องการ */
-    }
   `,
 })
 export class BloodYearPeriodComponent implements OnInit, OnDestroy {
   bloodPressureRecords$: Observable<BloodPressure[]> | undefined;
   ref: DynamicDialogRef | undefined;
   years: any[] = [];
-  admin: boolean = false;
-  loading: boolean = false;
+  admin = signal(false);
+  loading = signal(false);
 
   startYear = new FormControl();
   endYear = new FormControl();
@@ -216,9 +216,8 @@ export class BloodYearPeriodComponent implements OnInit, OnDestroy {
   constructor(
     private authService: AuthService,
     private bloodService: BloodService,
-    private confirmService: ConfirmationService,
+    private confirmService: ConfirmService,
     private dialogService: DialogService,
-    private messageService: MessagesService,
   ) {
   }
 
@@ -227,8 +226,8 @@ export class BloodYearPeriodComponent implements OnInit, OnDestroy {
     for (let i = 0; i < 5; i++) {
       this.years.push({label: `${currentYear - i}`, value: currentYear - i});
     }
-    this.authService.isAdmin().then((isAdmin) => {
-      this.admin = isAdmin;
+    this.authService.isAdmin().subscribe((isAdmin) => {
+      this.admin.set(isAdmin);
     });
   }
 
@@ -248,12 +247,12 @@ export class BloodYearPeriodComponent implements OnInit, OnDestroy {
 
   searchByYearRange() {
     if (this.yearStart && this.yearEnd) {
-      this.loading = true;
+      this.loading.set(true);
       this.bloodPressureRecords$ = this.bloodService.getBloodsByYearRange(
         this.yearStart,
         this.yearEnd,
       );
-      this.loading = false;
+      this.loading.set(false);
     }
   }
 
@@ -265,6 +264,7 @@ export class BloodYearPeriodComponent implements OnInit, OnDestroy {
       breakpoints: {
         maxWidth: '90vw',
       },
+      closable: true,
     });
   }
 
@@ -280,6 +280,7 @@ export class BloodYearPeriodComponent implements OnInit, OnDestroy {
         '640px': '90vw',
         '390px': '90vw',
       },
+      closable: true,
     });
   }
 
@@ -288,33 +289,15 @@ export class BloodYearPeriodComponent implements OnInit, OnDestroy {
     return systolic > 140 || diastolic > 90;
   }
 
-  confine(event: Event, morning: string) {
-    this.confirmService.confirm({
-      target: event.target as EventTarget,
-      message: 'ต้องการลบรายการนี้ แน่ใจ?',
-      header: 'Confirmation',
-      icon: 'pi pi-info-circle',
-      acceptButtonStyleClass: 'p-button-warning p-button-sm',
-      rejectButtonStyleClass: 'p-button-text',
-      accept: () => {
-        this.bloodService.deleteBlood(morning).subscribe({
-          next: () => {
-            this.messageService.addMessage(
-              'warn',
-              'Warning',
-              'ลบข้อมูลเรียบร้อยแล้ว',
-            );
-          },
-          error: (error: any) => {
-            this.messageService.addMessage('error', 'Error', error.message);
-          },
-          complete: () => {
-          },
-        });
+  confine(event: Event, id: string) {
+    this.confirmService.confirm(
+      event, id, this.bloodService,
+      this.bloodService.deleteBlood.bind(this.bloodService),
+      () => {
       },
-      reject: () => {
-        this.messageService.addMessage('warn', 'Warning', 'ยกเลิกการลบแล้ว!');
+      (error) => {
+        console.log(error);
       },
-    });
+    );
   }
 }
