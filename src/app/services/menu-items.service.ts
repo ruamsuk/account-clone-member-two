@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { MenuItem } from 'primeng/api';
+import { MenuItem, PrimeIcons } from 'primeng/api';
 import { map, Observable } from 'rxjs';
 import { AuthService } from './auth.service';
 import { EventService } from './event.service';
@@ -125,14 +125,19 @@ export class MenuItemsService {
           ],
         },
         {
-          label: 'Manage users',
+          label: 'AdminZone',
           icon: 'pi pi-users',
           visible: isAdmin, // ถูกต้อง ใช้ isAdmin Observable ในนี้แล้วได้ค่าที่ถูกจริงๆ
           items: [
             {
               label: 'Users list',
-              icon: 'pi pi-users',
+              icon: PrimeIcons.USERS,
               command: () => this.router.navigateByUrl('/manage-user').then()
+            },
+            {
+              label: 'Delete data',
+              icon: PrimeIcons.TRASH,
+              command: () => this.router.navigateByUrl('/delete-data').then()
             },
           ],
         },

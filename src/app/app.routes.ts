@@ -134,6 +134,14 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'delete-data',
+    ...canActivate(redirectUnauthorizedToLogin),
+    loadComponent: () =>
+      import('./components/delete-data.component').then(
+        (m) => m.DeleteDataComponent,
+      ),
+  },
+  {
     path: '',
     pathMatch: 'full',
     redirectTo: 'home',

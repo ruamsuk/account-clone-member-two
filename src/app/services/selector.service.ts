@@ -100,6 +100,28 @@ export class SelectorService {
     ];
   }
 
+  /**
+   * 1. yearSearch2
+   * 2. สร้าง array ของปีที่มีค่าตั้งแต่ปีปัจจุบัน - 10 ปี
+   * 3. ใช้ Array.from เพื่อสร้าง array ของปี
+   * 4. สร้าง object ของปี ที่มี key เป็น label และ value
+   * 5. label เป็น string ของปี
+   * 6. value เป็น number ของปี
+   * 7. คืนค่า array ของปี
+   * */
+  yearSearch2() {
+    const currentYear = new Date().getFullYear() + 543; // แปลงเป็นพุทธศักราช
+    const min = currentYear - 10;
+
+    return Array.from({length: currentYear - min + 1}, (_, i) => {
+      const year = min + i;
+      return {
+        label: `${year}`, // แปลงค่าเป็น string เพื่อใช้ใน label
+        value: year,      // ค่า value ยังคงเป็น number
+      };
+    });
+  }
+
   roleSearch() {
     return [
       {
@@ -124,5 +146,9 @@ export class SelectorService {
 
   getYear() {
     return Promise.resolve(this.yearSearch());
+  }
+
+  getYear2() {
+    return Promise.resolve(this.yearSearch2());
   }
 }

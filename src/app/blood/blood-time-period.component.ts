@@ -23,7 +23,7 @@ import { PrintDialogComponent } from './print-dialog.component';
     <div class="flex flex-wrap p-fluid justify-center items-center mt-2 m-5">
       <p-card>
         <div
-          class="text-center text-gray-200 font-thasadith text-base md:text-2xl -mt-3 mb-2"
+          class="text-center text-gray-200 font-thasadith text-base md:text-xl -mt-3 mb-2"
         >
           Blood Pressure Time Period
         </div>
