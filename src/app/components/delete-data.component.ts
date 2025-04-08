@@ -46,6 +46,14 @@ import { SharedModule } from '../shared/shared.module';
             </div>
           </form>
         </div>
+        <div class="my-3">
+          <p-message
+            severity="error"
+            icon="pi pi-exclamation-circle"
+            text="ระวัง!" styleClass="h-full">
+            <span class="ml-2 text-gray-300">ข้อมูลที่จะลบเหล่านี้ ไม่สามารถกู้คืนได้หากลบไปแล้ว โปรดระมัดระวัง!</span>
+          </p-message>
+        </div>
       </p-card>
     </div>
   `,

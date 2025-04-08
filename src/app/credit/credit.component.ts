@@ -126,6 +126,10 @@ export class CreditComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.updateStatusMessage();
+    this.creditForm.get('isCashback')?.valueChanges.subscribe({
+      next: () => this.updateStatusMessage(),
+      error: error => console.error('Error updating status message:', error),
+    });
   }
 
   updateStatusMessage() {

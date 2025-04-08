@@ -146,7 +146,7 @@ import { CreditComponent } from './credit.component';
                   </td>
                   <td>
                     <span class="text-orange-500">
-                      {{ creditSummary.cashback | currency:'':'':'1.0-2' }}
+                      {{ creditSummary.cashback | currency:'':'' }}
                     </span>
                   </td>
                   <td>
