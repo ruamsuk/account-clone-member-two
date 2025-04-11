@@ -54,7 +54,7 @@ import { SharedModule } from '../shared/shared.module';
           ></p-inputMask>
         </div>
         <div class="w-full" formGroupName="morning">
-          <span class="mb-2 block sarabun">BP2 Morning </span>
+          <span class="mb-2 block">BP2 Morning </span>
           <p-inputMask
             #bp2Morning
             formControlName="bp2"
@@ -65,7 +65,7 @@ import { SharedModule } from '../shared/shared.module';
           ></p-inputMask>
         </div>
         <div class="flex-auto">
-          <span class="mb-2 block sarabun">Evening </span>
+          <span class="mb-2 block">Evening </span>
           <input
             pInputText
             type="text"
@@ -78,7 +78,7 @@ import { SharedModule } from '../shared/shared.module';
           <hr class="h-px bg-gray-200 border-0"/>
         </div>
         <div class="w-full" formGroupName="evening">
-          <span class="mb-2 block sarabun">BP1 Evening </span>
+          <span class="mb-2 block">BP1 Evening </span>
           <p-inputMask
             #bp1Evening
             formControlName="bp1"
@@ -89,7 +89,7 @@ import { SharedModule } from '../shared/shared.module';
           ></p-inputMask>
         </div>
         <div class="w-full" formGroupName="evening">
-          <span class="mb-2 block sarabun">BP2 Evening </span>
+          <span class="mb-2 block">BP2 Evening </span>
           <p-inputMask
             #bp2Evening
             formControlName="bp2"

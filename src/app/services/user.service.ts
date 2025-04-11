@@ -18,9 +18,10 @@ export class UserService {
   firestore = inject(Firestore);
   http = inject(HttpClient);
 
-  baseUrl = environment.production
-    ? `https://us-central1-${environment.firebaseConfig.projectId}.cloudfunctions.net/apiFunction/users`
-    : `http://localhost:5001/${environment.firebaseConfig.projectId}/us-central1/apiFunction/users`;
+  // baseUrl = environment.production
+  //   ? `https://us-central1-${environment.firebaseConfig.projectId}.cloudfunctions.net/apiFunction/users`
+  //   : `http://localhost:5001/${environment.firebaseConfig.projectId}/us-central1/apiFunction/users`;
+  baseUrl = `https://us-central1-${environment.firebaseConfig.projectId}.cloudfunctions.net/apiFunction/users`;
 
   form = new FormGroup({
     uid: new FormControl(''),

@@ -1,4 +1,4 @@
-import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { HttpClient, provideHttpClient, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
 import { ApplicationConfig, importProvidersFrom, provideZoneChangeDetection } from '@angular/core';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { initializeAppCheck, provideAppCheck, ReCaptchaV3Provider } from '@angular/fire/app-check';
@@ -19,12 +19,15 @@ import { environment } from '../environments/environment';
 import YourPreset from '../theme/styles';
 
 import { routes } from './app.routes';
-import { AuthTokenHttpInterceptorProvider } from './http_interceptors/auth-token.interceptor';
+import { authTokenInterceptor } from './http_interceptors/auth-token.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({eventCoalescing: true}),
     provideRouter(routes),
+    provideHttpClient(
+      withInterceptors([authTokenInterceptor]),
+    ),
     provideAnimations(),
     provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
     provideAuth(() => getAuth()),
@@ -32,7 +35,6 @@ export const appConfig: ApplicationConfig = {
     provideFunctions(() => getFunctions()),
     provideStorage(() => getStorage()),
     provideHttpClient(withInterceptorsFromDi()),
-    AuthTokenHttpInterceptorProvider,
     providePrimeNG({
       ripple: true,
       theme: {

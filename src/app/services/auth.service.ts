@@ -21,11 +21,9 @@ import {
 import { doc, docData, Firestore, getDoc, setDoc } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import { GoogleAuthProvider } from '@firebase/auth';
-import { auth } from 'firebase-admin';
 import { concatMap, from, map, Observable, of, switchMap } from 'rxjs';
 import { ProfileUser } from '../models/profile-user.model';
 import { UserProfile } from '../models/user.model';
-import UserInfo = auth.UserInfo;
 
 @Injectable({
   providedIn: 'root',
@@ -171,7 +169,7 @@ export class AuthService {
     );
   }
 
-  updateProfile(profileData: Partial<UserInfo>): Observable<any> {
+  updateProfile(profileData: { uid: string; photoURL: string }): Observable<any> {
     const user = this.auth.currentUser;
 
     return of(user).pipe(
