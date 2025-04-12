@@ -8,12 +8,8 @@ export function isAuthorized(opts: {
   allowSameUser?: boolean;
 }) {
   return (req: Request, res: Response, next: NextFunction) => {
-    const {role, email, uid} = res.locals;
+    const {role, uid} = res.locals;
     const {id} = req.params;
-
-    if (email === 'r.wathana@gmail.com') {
-      return next();
-    }
 
     if (opts.allowSameUser && id && uid === id) {
       return next();
