@@ -1,19 +1,39 @@
-/**
- * Import function triggers from their respective submodules:
- *
- * import {onCall} from "firebase-functions/v2/https";
- * import {onDocumentWritten} from "firebase-functions/v2/firestore";
- *
- * See a full list of supported triggers at https://firebase.google.com/docs/functions
- */
+import * as functions from 'firebase-functions';
+import express from 'express';
+import cors from 'cors';
+import admin from 'firebase-admin';
 
-import {onRequest} from "firebase-functions/v2/https";
-import * as logger from "firebase-functions/logger";
+import serviceAccount from './firebase-adminsdk.json';
+import { routesConfig } from './users/routes-config';
 
-// Start writing functions
-// https://firebase.google.com/docs/functions/typescript
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
+  databaseURL: 'https://new-accounts-93b33.firebaseio.com',
+});
+const app = express();
+const allowedOrigins = [
+  'https://new-accounts-93b33.web.app',
+  'https://new-accounts-93b33.firebaseapp.com',
+  'https://iamruamsuk.net',
+  'https://iamruamsuk.xyz',
+  'http://localhost:4200',
+];
+const corsOptions = {
+  origin: function (
+    origin: string | undefined,
+    callback: (err: Error | null, allow?: boolean) => void,
+  ) {
+    if (allowedOrigins.indexOf(<string>origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+};
 
-// export const helloWorld = onRequest((request, response) => {
-//   logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+app.use(express.json());
+app.use(cors(corsOptions));
+
+routesConfig(app);
+
+export const apiFunction = functions.https.onRequest(app);

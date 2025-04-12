@@ -84,21 +84,23 @@ import { UserEditComponent } from './user-edit.component';
               <tr>
                 <td>{{ currentPage * rowsPerPage + i + 1 }}</td>
                 <td>
-                  @if (user?.photoURL) {
-                    <img
-                      [ngSrc]="user?.photoURL"
-                      alt="photo"
-                      height="80"
-                      width="80"
-                    />
-                  } @else {
-                    <img
-                      [ngSrc]="'/images/dummy-user.png'"
-                      alt="Profile Image"
-                      height="80"
-                      width="80"
-                    />
-                  }
+                  <div class="profile-image">
+                    @if (user?.photoURL) {
+                      <img
+                        [ngSrc]="user?.photoURL"
+                        alt="photo"
+                        height="32"
+                        width="32"
+                      />
+                    } @else {
+                      <img
+                        [ngSrc]="'/images/dummy-user.png'"
+                        alt="Profile Image"
+                        height="32"
+                        width="32"
+                      />
+                    }
+                  </div>
                 </td>
                 <td>{{ user.displayName }}</td>
                 <td>{{ user.email }}</td>
