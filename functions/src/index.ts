@@ -17,6 +17,7 @@ const allowedOrigins = [
   'https://iamruamsuk.net',
   'https://iamruamsuk.xyz',
   'http://localhost:4200',
+  'http://localhost:3000',
 ];
 const corsOptions = {
   origin: function (
