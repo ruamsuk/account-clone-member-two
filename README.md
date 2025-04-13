@@ -8,11 +8,38 @@ This project was generated using [Angular CLI](https://github.com/angular/angula
     ng serve
 ```
 
-## Repo
+## Local sources
+
+```aiignore
+G:\ACCOUNT2025\account-clone-member-two
+```
+
+## Repo.
 
 ```aiignore
 https://github.com/ruamsuk/account-clone-member-two.git
 ```
+
+## ข้อผิดพลาดที่พบ
+
+1. โปรเจคเสร็จ ng serve ได้ไม่มีปัญหา
+2. พอ build -c production ไม่ผ่าน error มากมายเลย
+3. ค้นหาก็พบว่า IDE.ของเราฉลาดเกินไปหน่อย ไป import สิ่งที่ใช้ในฝั่ง backend เข้ามา
+4. ไม่ทันสังเกตเลย build ไม่ผ่าน พอลบออกก็ผ่านฉลุย
+5. ต้องดูให้ดีใน import ของแต่ละ component
+6. _ที่เขียนนี้ไว้เตือนตนเองนะ_
+
+## Functions
+
+- เพื่อจัดการ users ในการกำหนดสิทธิให้แต่ละคน
+- รวมถึงการ เพิ่ม ลบ แก้ไข ผู้ใช้แต่ละคน ด้วยอำนาจ admin & manager
+- ทำเพื่อการเรียนรู้เท่านั้น เพราะเป็นโปรเจคใช้ส่วนตัว ไม่มีทีมงานอะไร
+- การตั้งค่าที่สำคัญอยู่ใน functions/src/tsconfig.json & .eslintrc.js
+- อย่าเผลอแอดไฟล์ functions/src/**firebase-adminsdk.json** ใน git เด็ดขาด!
+- ไม่เช่นนั้นเมื่อ push code ไป git เจ้า firebase จะลบคีย์ต่างๆ ที่กำหนดไว้ทันที ทำให้ต้องไปเจนคีย์ใหม่
+- ไม่เก่ง git command ก็ให้ถาม AI.จะบอกวิธีแก้ไขให้ หากเผลอไปแอดแล้ว
+- มีปัญหาค่อนข้างเยอะ แต่ก็สำเร็จได้ด้วยความช่วยเหลือของ AI.
+- รวมถึง JetBrains WebStorm IDE. Thank you for None-commercial use.
 
 ## วัตถุประสงค์
 
@@ -87,6 +114,28 @@ saveMonthly()
 - โค๊ดเก่าใน git ก็เป็นเวอร์ชั่นเก่า ต้องมาปรับปรุงใหม่ โดยเดิมใช้ PrimeFlex ซึ่งจะเลิกสนับสนุนแล้ว จึงเปลี่ยนไปใช้ TailwindCSS แทน
 - หวังว่าจะใช้งานได้ตรงตามที่ต้องการ
 
+* อันนี้เป็นคำสั่งเพื่อติดตั้ง file-saver เพื่อใช้ในการสร้างเอกสาร word document (.docx)
+
 ```bash 
    npm i --save-dev @types/file-saver
 ```
+
+* แล้วอย่าลืมเพิ่มคำสั่งนี้ ใน section options ด้วย
+
+```
+options {
+.......
+
+"allowedCommonJsDependencies": [
+  "docxtemplater",
+  "dayjs",
+  "pizzip",
+  "file-saver"
+  ]
+
+.........
+
+}
+```
+
+- ในไฟล์ angular.json เพื่อเวลา build จะได้ไม่มี warning.
