@@ -44,7 +44,7 @@ import { CrudMonthlyComponent } from './crud-monthly/crud-monthly.component';
             [rowHover]="true"
             [rowsPerPageOptions]="[5, 10, 20, 30]"
             [paginator]="true"
-            [globalFilterFields]="['details', 'remark']"
+            [globalFilterFields]="['year']"
             [scrollable]="true"
             scrollHeight="800px"
             [tableStyle]="{ 'min-width': '40rem' }"
@@ -67,9 +67,9 @@ import { CrudMonthlyComponent } from './crud-monthly/crud-monthly.component';
                   <input
                     pInputText
                     [formControl]="searchValue"
-                    pTooltip="หาเดือน"
+                    pTooltip="กรอกเลขปี ค.ศ.นะจ๊ะ"
                     tooltipPosition="bottom"
-                    placeholder="ค้นหา .."
+                    placeholder="ค้นหาปี ค.ศ.นะ .."
                     type="text"
                     (input)="tb.filterGlobal(getValue($event), 'contains')"
                   />
