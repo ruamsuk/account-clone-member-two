@@ -249,10 +249,17 @@ export class AccountBetweenDetailComponent implements OnInit {
     return of(null);
   }
 
+  /**
+   * @param event ตำแหน่งที่จะแสดง confirm message.
+   * @param id เรคคอร์ดที่จะลบ
+   * ให้ใส่ Service ที่จะใช้ลบข้อมูล
+   * */
   confirm(event: Event, id: string) {
-    this.confirmService.confirm(event, id, this.accountsService, this.accountsService.deleteAccount.bind(this.accountsService), () => {
-      console.log('Account deleted successfully');
-    }, (error: any) => console.error('Error deleting account: ', error));
+    this.confirmService.confirm(
+      event, id, this.accountsService,
+      this.accountsService.deleteAccount.bind(this.accountsService), () => {
+        console.log('Account deleted successfully');
+      }, (error: any) => console.error('Error deleting account: ', error));
   }
 
   showDialog(account: any) {

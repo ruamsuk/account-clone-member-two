@@ -233,7 +233,7 @@ export class CreditYearComponent implements OnInit {
             this.toastService.showError('Error', `Error: ${err}`);
           },
           complete: () =>
-            setInterval(() => {
+            setTimeout(() => {
               this.loading.set(false);
               this.cdr.detectChanges();
             }, 100),

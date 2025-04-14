@@ -139,3 +139,5 @@ options {
 ```
 
 - ในไฟล์ angular.json เพื่อเวลา build จะได้ไม่มี warning.
+- แก้ไขไฟล์ app.config.ts เพราะกำหนด provideHttpClient() ซ้ำ
+- แก้ prime data table ให้ใช้ scroll แทน stack 

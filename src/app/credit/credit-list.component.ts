@@ -138,7 +138,6 @@ export class CreditListComponent implements OnInit, OnDestroy {
   currentPage = 0;
   rowsPerPage = 10;
 
-  credits!: Credit[];
   dialogRef: DynamicDialogRef | undefined;
   searchValue = new FormControl('');
   loading = signal(true);

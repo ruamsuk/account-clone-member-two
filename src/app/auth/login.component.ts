@@ -198,7 +198,6 @@ export class LoginComponent {
           await this.router.navigateByUrl('/auth/login');
           return;
         }
-        const role = this.authService.isAdmin();
       },
       error: (error) => {
         this.setTimer();

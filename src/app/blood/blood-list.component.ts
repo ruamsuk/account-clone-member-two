@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnDestroy, OnInit } from '@angular/core';
+import { Component, DestroyRef, OnDestroy, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl } from '@angular/forms';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
@@ -18,7 +18,7 @@ import { BloodAddEditComponent } from './blood-add-edit.component';
   standalone: true,
   imports: [SharedModule, ThaiDatePipe],
   template: `
-    @if (loading) {
+    @if (loading()) {
       <div class="loading-shade">
         <p-progressSpinner strokeWidth="4" ariaLabel="loading"/>
       </div>
@@ -167,7 +167,7 @@ import { BloodAddEditComponent } from './blood-add-edit.component';
                 </div>
               </td>
               <td>
-                @if (admin) {
+                @if (admin()) {
                   <i
                     class="pi pi-pen-to-square mr-2 ml-2 text-blue-400"
                     (click)="showDialog(blood)"
@@ -193,10 +193,10 @@ import { BloodAddEditComponent } from './blood-add-edit.component';
 export class BloodListComponent implements OnInit, OnDestroy {
   ref: DynamicDialogRef | undefined;
   bloods$!: Observable<BloodPressure[]>;
-  loading: boolean = false;
+  loading = signal(false);
   searchControl: FormControl;
 
-  admin: boolean = false;
+  admin = signal(false);
 
   constructor(
     private authService: AuthService,
@@ -211,13 +211,13 @@ export class BloodListComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.authService.isAdmin().subscribe((isAdmin) => {
-      this.admin = isAdmin;
+      this.admin.set(isAdmin);
     });
     this.getBloodList();
   }
 
   getBloodList() {
-    this.loading = true;
+    this.loading.set(true);
 
     this.bloods$ = this.bloodService.getBloods().pipe(
       takeUntilDestroyed(this.destroyRef),
@@ -228,7 +228,7 @@ export class BloodListComponent implements OnInit, OnDestroy {
     );
     this.bloods$.subscribe({
       next: () => {
-        this.loading = false;
+        this.loading.set(false);
       },
     });
   }

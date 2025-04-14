@@ -14,7 +14,6 @@ import { SharedModule } from '../shared/shared.module';
   selector: 'app-user-profile',
   imports: [
     SharedModule,
-
   ],
   template: `
     <hr class="h-px bg-gray-200 border-0"/>

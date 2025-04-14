@@ -214,7 +214,7 @@ export class AccountsYearCalculateComponent implements OnInit {
         this.totalBalance = summaryArray.reduce(
           (sum, item) => sum + item.balance, 0
         );
-        setInterval(() => {
+        setTimeout(() => {
           this.loading.set(false);
           this.cdr.detectChanges();
         }, 100);

@@ -129,6 +129,16 @@ import { AccountsComponent } from './accounts.component';
               </td>
             </tr>
           </ng-template>
+          <ng-template #emptymessage>
+            <tr>
+              <td colspan="6">
+                <p-message
+                  severity="warn"
+                  icon="pi pi-exclamation-circle"
+                  text="ไม่พบข้อมูล" styleClass="h-full"/>
+              </td>
+            </tr>
+          </ng-template>
         </p-table>
       </div>
     }

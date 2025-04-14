@@ -1,5 +1,5 @@
 import { CurrencyPipe } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnDestroy } from '@angular/core';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { Credit } from '../models/credit.model';
 import { ThaiDatePipe } from '../pipe/thai-date.pipe';
@@ -59,7 +59,7 @@ import { SharedModule } from '../shared/shared.module';
 
   `,
 })
-export class CreditDetailComponent {
+export class CreditDetailComponent implements OnDestroy {
   creditData = inject(DynamicDialogConfig);
   ref = inject(DynamicDialogRef);
   credit!: Credit;
@@ -72,5 +72,9 @@ export class CreditDetailComponent {
 
   dialogClose() {
     this.ref.close();
+  }
+
+  ngOnDestroy() {
+    if (this.ref) this.ref.close();
   }
 }

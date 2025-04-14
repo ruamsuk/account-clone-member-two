@@ -3,7 +3,7 @@ import { inject, Injectable, NgZone } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import {
   Auth,
-  authState,
+  authState, createUserWithEmailAndPassword,
   getAuth,
   getIdTokenResult,
   IdTokenResult,
@@ -141,16 +141,8 @@ export class AuthService {
     return await sendEmailVerification(<User>this.auth.currentUser);
   }
 
-  isLoggedIn(): boolean {
-    return !!this.auth.currentUser;
-  }
-
   getUserState(): Observable<any> {
     return user(this.auth);
-  }
-
-  getIdTokenResult(): Promise<IdTokenResult> | any {
-    return getAuth().currentUser?.getIdTokenResult();
   }
 
   isAdmin(): Observable<boolean> {
@@ -220,5 +212,13 @@ export class AuthService {
     } else {
       return Promise.reject(new Error('No authenticated user found'));
     }
+  }
+
+  async signupWithDisplayName(email: string, password: string, displayName: string): Promise<void> {
+    const userCredential = await this.ngZone.run(() => createUserWithEmailAndPassword(this.auth, email, password));
+    await updateProfile(userCredential.user, {displayName});
+    await this.saveUserToFirestore(userCredential.user, displayName);
+    await this.sendEmailVerification();
+    await this.logout();
   }
 }
