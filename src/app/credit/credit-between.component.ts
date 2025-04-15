@@ -54,9 +54,19 @@ import { CreditComponent } from './credit.component';
         </div>
       </p-card>
     </div>
+    <!-- ถ้าไม่พบข้อมูลที่ต้องการค้นหา ให้แสดงข้อความแจ้ง -->
+    @if (!hasData()) {
+      <div class="myCenter">
+        <p-message
+          severity="warn"
+          icon="pi pi-exclamation-circle"
+          text="ไม่พบข้อมูล" styleClass="text-orange-500 font-bold text-xl">
+          <span class="italic text-indigo-400">เลือกใหม่!</span>
+        </p-message>
+      </div>
+    }
     @if (creditSummary$ | async; as creditSummary) {
       @if (creditSummary.transactions.length > 0) {
-
         <div class="table-container items-center justify-center mt-3">
           <div class="card">
             <p-table
@@ -140,12 +150,12 @@ import { CreditComponent } from './credit.component';
                     </div>
                   </td>
                   <td>
-                    <span class="text-green-400 font-thasadith font-semibold text-base md:text-xl">
+                    <span class="text-indigo-400 font-thasadith font-semibold text-base md:text-xl">
                       เงินคืน:
                     </span>
                   </td>
                   <td>
-                    <span class="text-orange-500">
+                    <span class="text-green-400">
                       {{ creditSummary.cashback | currency:'':'' }}
                     </span>
                   </td>
@@ -184,6 +194,7 @@ export class CreditBetweenComponent implements OnInit, OnDestroy {
   loading = signal(false);
   admin = signal(false);
   isMobile = signal(false);
+  hasData = signal(true);
 
   dialogRef: DynamicDialogRef | undefined;
   month: any;
@@ -258,10 +269,15 @@ export class CreditBetweenComponent implements OnInit, OnDestroy {
         return this.creditService.getCreditSummary(
           adjustMonthAndYear.month,
           adjustMonthAndYear.year,
+        ).pipe(
+          switchMap((summary) => {
+            this.hasData.set(summary.transactions.length > 0);
+            return of(summary);
+          })
         );
       }),
       finalize(() => {
-        setInterval(() => {
+        setTimeout(() => {
           this.loading.set(false);
           this.cdr.detectChanges();
         }, 100);
