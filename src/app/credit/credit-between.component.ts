@@ -1,7 +1,8 @@
 import { Component, HostListener, inject, OnDestroy, OnInit, signal } from '@angular/core';
+import { set } from '@angular/fire/database';
 import { FormControl } from '@angular/forms';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { map, catchError, tap } from 'rxjs/operators';
+import { map, catchError, tap, timeout } from 'rxjs/operators';
 import { combineLatest, debounceTime, finalize, Observable, of, startWith, switchMap } from 'rxjs';
 import { MonthSummary } from '../models/credit.model';
 import { ThaiDatePipe } from '../pipe/thai-date.pipe';
@@ -54,9 +55,6 @@ import { CreditComponent } from './credit.component';
           </div>
         </div>
       </p-card>
-    </div>
-    <div *ngIf="!(creditSummary$ | async)?.transactions?.length" class="flex justify-center items-center mt-5">
-      <p-message severity="warn" text="ไม่พบข้อมูล" styleClass="text-orange-500 font-bold text-xl"></p-message>
     </div>
     <!-- ถ้าไม่พบข้อมูลที่ต้องการค้นหา ให้แสดงข้อความแจ้ง -->
     @if (!hasData()) {
@@ -242,6 +240,8 @@ export class CreditBetweenComponent implements OnInit, OnDestroy {
   }
 
   search() {
+    this.loading.set(true);
+
     const christianYear = this.convertToChristianYear(
       this.selectYear.value.label,
     );
@@ -273,10 +273,13 @@ export class CreditBetweenComponent implements OnInit, OnDestroy {
       )),
       switchMap(({month, year}) =>
         this.creditService.getCreditSummary(month, year).pipe(
-          catchError(() => of({expense: 0, cashback: 0, transactions: []})) // จัดการข้อผิดพลาด
+          catchError(() => of({expense: 0, cashback: 0, transactions: []}))
         )
       ),
-      tap((summary: MonthSummary) => this.hasData.set(summary.transactions.length > 0)), // อัปเดต hasData
+      tap((summary: MonthSummary) => {
+        this.hasData.set(summary.transactions.length > 0);
+        this.loading.set(false);
+      }), // อัปเดต hasData
       finalize(() => this.loading.set(false))
     );
     return;
