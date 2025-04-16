@@ -1,7 +1,8 @@
-import { ChangeDetectorRef, Component, HostListener, inject, OnDestroy, OnInit, signal } from '@angular/core';
+import { Component, HostListener, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { combineLatest, finalize, Observable, of, startWith, switchMap } from 'rxjs';
+import { map, catchError, tap } from 'rxjs/operators';
+import { combineLatest, debounceTime, finalize, Observable, of, startWith, switchMap } from 'rxjs';
 import { MonthSummary } from '../models/credit.model';
 import { ThaiDatePipe } from '../pipe/thai-date.pipe';
 import { AuthService } from '../services/auth.service';
@@ -53,6 +54,9 @@ import { CreditComponent } from './credit.component';
           </div>
         </div>
       </p-card>
+    </div>
+    <div *ngIf="!(creditSummary$ | async)?.transactions?.length" class="flex justify-center items-center mt-5">
+      <p-message severity="warn" text="ไม่พบข้อมูล" styleClass="text-orange-500 font-bold text-xl"></p-message>
     </div>
     <!-- ถ้าไม่พบข้อมูลที่ต้องการค้นหา ให้แสดงข้อความแจ้ง -->
     @if (!hasData()) {
@@ -178,7 +182,6 @@ import { CreditComponent } from './credit.component';
 export class CreditBetweenComponent implements OnInit, OnDestroy {
   authService = inject(AuthService);
   confirmService = inject(ConfirmService);
-  cdr = inject(ChangeDetectorRef);
   dialogService = inject(DialogService);
   monthConversionService = inject(MonthConversionService);
   selectService = inject(SelectorService);
@@ -244,12 +247,12 @@ export class CreditBetweenComponent implements OnInit, OnDestroy {
     );
     const monthNumber = this.monthConversionService.thaiMonthToNumber(
       this.selectMonth.value.label,
-    );
+    ) ?? 0;
 
     this.searchMonth = this.selectMonth.value.label;
     this.searchYear = this.selectYear.value.label;
 
-    if (monthNumber === undefined) {
+    if (monthNumber === 0) {
       console.error('Invalid month name:', this.selectMonth.value.label);
       return of({expense: 0, cashback: 0, transactions: []});
     }
@@ -257,31 +260,24 @@ export class CreditBetweenComponent implements OnInit, OnDestroy {
     this.creditSummary$ = combineLatest([
       this.selectMonth.valueChanges.pipe(
         startWith(this.selectMonth.value.label),
+        debounceTime(300) // ลดการเรียก API
       ),
-      this.selectYear.valueChanges.pipe(startWith(christianYear)),
+      this.selectYear.valueChanges.pipe(
+        startWith(christianYear),
+        debounceTime(300)
+      )
     ]).pipe(
-      switchMap(([month, year]) => {
-        const adjustMonthAndYear = this.adjustMonthAndYearForJanuary(
-          monthNumber,
-          year
-        );
-
-        return this.creditService.getCreditSummary(
-          adjustMonthAndYear.month,
-          adjustMonthAndYear.year,
-        ).pipe(
-          switchMap((summary) => {
-            this.hasData.set(summary.transactions.length > 0);
-            return of(summary);
-          })
-        );
-      }),
-      finalize(() => {
-        setTimeout(() => {
-          this.loading.set(false);
-          this.cdr.detectChanges();
-        }, 100);
-      }),
+      map(([month, year]: [string, number]) => this.adjustMonthAndYearForJanuary(
+        this.monthConversionService.thaiMonthToNumber(month) ?? 0,
+        year
+      )),
+      switchMap(({month, year}) =>
+        this.creditService.getCreditSummary(month, year).pipe(
+          catchError(() => of({expense: 0, cashback: 0, transactions: []})) // จัดการข้อผิดพลาด
+        )
+      ),
+      tap((summary: MonthSummary) => this.hasData.set(summary.transactions.length > 0)), // อัปเดต hasData
+      finalize(() => this.loading.set(false))
     );
     return;
   }
